@@ -3,67 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LastLarch | Climate Resilience Advisory</title>
+    <title>Last Larch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=Karla:wght@300&family=Space+Grotesk:wght@500&display=swap" rel="stylesheet">
+    
     <style>
-        :root {
-            --bg: #F2F2F0; /* Silt White */ 
-            --dark: #1A1A1B; /* Obsidian */
-            --gold: #B98D4B; /* Weathered Larch Gold */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html {
+            height: 100%;
+            background-color: #FFFFF0; /* Ivory */
+            color: #1A1A1A; /* Charcoal */
+            overflow: hidden;
+            position: relative;
         }
-        body {
-            background-color: var(--bg);
-            color: var(--dark);
-            font-family: 'Helvetica Neue', sans-serif;
-            margin: 0; padding: 0;
-            display: flex; flex-direction: column; min-height: 100vh;
+
+        .bg-ghost {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('69c2181c-c4f7-43e9-93c1-0184851a20a5_removalai_preview.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.08; 
+            z-index: 0;
+            filter: grayscale(100%);
         }
-        header {
-            padding: 4rem 2rem;
-            border-bottom: 12px solid var(--dark);
-            background: var(--dark);
-            color: var(--gold);
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8vh 0;
+            position: relative;
+            z-index: 1;
         }
-        .monolith {
-            font-size: 5rem;
-            font-weight: 900;
+
+        /* The Symmetrical Header */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            gap: 40px; /* Space between words and logo */
+        }
+
+        .brand-header h1 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 500;
+            /* Size matched to logo height */
+            font-size: 80px; 
+            color: #D4AF37;
             text-transform: uppercase;
-            letter-spacing: -3px;
-            margin: 0;
+            letter-spacing: 0.2em;
+            line-height: 1;
         }
-        main {
-            padding: 4rem 2rem;
-            max-width: 800px;
+
+        .logo-mid img {
+            height: 100px; /* Base height for the logo */
+            width: auto;
+            display: block;
         }
-        .statement {
-            font-size: 1.5rem;
-            line-height: 1.4;
-            border-left: 5px solid var(--gold);
-            padding-left: 2rem;
+
+        /* Nav Horizon */
+        .nav-wrapper {
+            width: 75%; 
+            border-top: 8px solid #D4AF37; 
+            border-bottom: 8px solid #D4AF37;
+            padding: 3.5rem 0;
         }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 120px; 
+        }
+
+        .nav-links a {
+            font-family: 'Space Grotesk', sans-serif;
+            text-decoration: none;
+            color: #1A1A1A;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #D4AF37;
+        }
+
+        /* Footer */
         .footer {
-            margin-top: auto;
-            padding: 2rem;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            background: var(--dark);
-            color: #666;
+            font-family: 'Karla', sans-serif;
+        }
+
+        .footer a {
+            color: #1A1A1A;
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 0.4em;
+            opacity: 0.5;
+        }
+
+        /* Responsive - Stack them on small screens */
+        @media (max-width: 900px) {
+            .brand-header { flex-direction: column; gap: 10px; }
+            .brand-header h1 { font-size: 50px; letter-spacing: 0.1em; }
+            .logo-mid img { height: 70px; }
+            .nav-links { gap: 30px; flex-direction: column; text-align: center; }
+            .nav-wrapper { width: 90%; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1 class="monolith">LastLarch</h1>
-        <p>RELIANCE AT THE TREELINE.</p>
-    </header>
-    <main>
-        <p class="statement">
-            Climate consultancy for high-stress environments. <br>
-            We build strategies that hold ground when the conditions turn.
-        </p>
-        <p>Based at the frontier of resilience. Built to endure.</p>
-    </main>
-    <footer class="footer">
-        © 2026 LastLarch Corp. | All Rights Reserved.
-    </footer>
+
+    <div class="bg-ghost"></div>
+
+    <div class="container">
+        
+        <header class="brand-header">
+            <h1>Last</h1>
+            <div class="logo-mid">
+                <img src="LL Logo 4.png" alt="Logo">
+            </div>
+            <h1>Larch</h1>
+        </header>
+
+        <div class="nav-wrapper">
+            <nav class="nav-links">
+                <a href="about.html">About</a>
+                <a href="projects.html">Projects</a>
+                <a href="blog.html">Blog</a>
+            </nav>
+        </div>
+
+        <div class="footer">
+            <a href="mailto:fysh@lastlarch.com">CONTACT</a>
+        </div>
+    </div>
+
 </body>
 </html>
