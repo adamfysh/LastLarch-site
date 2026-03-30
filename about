@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | Last Larch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=Karla:wght@300&family=Space+Grotesk:wght@500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #FFFFF0;
+            color: #1A1A1A;
+            font-family: 'Karla', sans-serif;
+            padding: 40px;
+            line-height: 1.8;
+        }
+
+        /* Standardized Mini Header */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 80px;
+        }
+        header h1 {
+            font-family: 'Archivo', sans-serif;
+            font-size: 1.2rem;
+            color: #D4AF37;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+        }
+        header img { height: 45px; width: auto; }
+
+        .about-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+        }
+
+        .about-text h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #D4AF37;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .about-text p {
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            opacity: 0.8;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 400px;
+            background-color: #eee;
+            overflow: hidden;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .footer-nav {
+            text-align: center;
+            margin-top: 80px;
+        }
+        .footer-nav a {
+            text-decoration: none;
+            color: #1A1A1A;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Last</h1>
+        <a href="index.html"><img src="LL Logo 4.png" alt="Logo"></a>
+        <h1>Larch</h1>
+    </header>
+
+    <div class="about-container">
+        <div class="profile-image">
+            <img src="studio-view.jpg" alt="Last Larch Studio">
+        </div>
+
+        <div class="about-text">
+            <h2>The Aesthetic</h2>
+            <p>Last Larch is a design practice centered on the intersection of permanence and the natural world. We believe in materials that age with dignity and structures that honor their environment.</p>
+            <p>Based on the principle of "Architectural Honesty," our work prioritizes raw textures—larch, steel, and stone—balanced against the refined warmth of ivory and gold.</p>
+        </div>
+    </div>
+
+    <div class="footer-nav">
+        <a href="index.html">RETURN TO CORE</a>
+    </div>
+
+</body>
+</html>
