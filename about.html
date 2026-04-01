@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | Last Larch</title>
+  <link rel="stylesheet" href="last_larch.css">
+  <style>
+    /* ── About page specific styles ── */
+    .about-hero {
+      border-bottom: 2.5px solid var(--charcoal);
+      margin-bottom: 0;
+    }
+    .about-hero img {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+    }
+    .about-body {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 0;
+      border-bottom: 2.5px solid var(--charcoal);
+    }
+    .about-sidebar {
+      padding: 48px 32px 48px 0;
+      border-right: 2.5px solid var(--charcoal);
+    }
+    .about-sidebar .t-overline {
+      margin-bottom: 24px;
+      display: block;
+    }
+    .about-sidebar .t-h1 {
+      margin-bottom: 16px;
+    }
+    .about-content {
+      padding: 48px 0 48px 48px;
+    }
+    .about-content .t-body {
+      margin-bottom: 24px;
+      max-width: 100%;
+    }
+    .about-content .t-body:last-child {
+      margin-bottom: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="demo-nav">
+    <div class="nav-logo">
+      <div class="nav-logo-mark">LL</div>
+      Last Larch
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Work</a></li>
+      <li><a href="solutions.html">Solutions</a></li>
+      <li><a href="thinking.html">Thinking</a></li>
+      <li class="active"><a href="about.html">About</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-primary">Get in touch</button>
+    </div>
+  </nav>
+
+  <!-- HERO IMAGE -->
+  <div class="about-hero">
+    <img src="last_larch_pano.png" alt="Last Larch landscape">
+  </div>
+
+  <!-- ABOUT BODY -->
+  <div class="about-body">
+
+    <div class="about-sidebar">
+      <span class="t-overline">About</span>
+      <div class="t-h1">Resilience<br>is <em style="font-style:italic; color:var(--gold-d);">golden.</em></div>
+    </div>
+
+    <div class="about-content">
+      <p class="t-body">Last Larch works at the edge of what is still possible. We build tools, models and frameworks for organizations, communities and countries to navigate climate risk and societal change.</p>
+      <p class="t-body">Practical tools and strategic guidance for organisations planning through climate disruption, ecological transition, and long-term systemic risk. We take inspiration from the alpine larch <em>(Larix lyallii)</em>, a tree that does not just survive where other trees fail — it thrives there. The larch holds firm in thin air and biting frost; a sentinel at the treeline. In the face of a changing climate, resilience isn't about avoiding the storm, it is about maintaining the structural integrity to remain upright when the gale is at its peak.</p>
+      <p class="t-body">Climate strategy is not just about weathering the storm. It is about finding the brilliance in the transition and turning the necessity of change into a period of unprecedented value and inspiration.</p>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="demo-footer">
+    <div>
+      <div class="footer-brand">Last Larch</div>
+      <div class="footer-sub">Climate &amp; resilience advisory.<br>Deep roots. Clear sight. Honest counsel.</div>
+    </div>
+    <div>
+      <div class="footer-col-title">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="index.html">Work</a></li>
+        <li><a href="solutions.html">Solutions</a></li>
+        <li><a href="thinking.html">Thinking</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="mailto:hello@lastlarch.com">hello@lastlarch.com</a></li>
+        <li><a href="#">LinkedIn</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>
