@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last Larch</title>
+  <link rel="stylesheet" href="last_larch.css">
+  <style>
+    /* ── Full-screen landing layout ── */
+    body, html {
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bg-ghost {
+      position: absolute;
+      inset: 0;
+      background-image: url('69c2181c-c4f7-43e9-93c1-0184851a20a5_removalai_preview.png');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      opacity: 0.08;
+      filter: grayscale(100%);
+      z-index: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8vh 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Brand header ── */
+    .brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    .brand-header h1 {
+      font-family: var(--ff-serif);
+      font-size: 80px;
+      color: var(--gold);
+      letter-spacing: 0.2em;
+      line-height: 1;
+    }
+
+    .logo-mid img {
+      height: 100px;
+      width: auto;
+      display: block;
+    }
+
+    /* ── Nav horizon ── */
+    .nav-wrapper {
+      width: 75%;
+      border-top: var(--rule) solid var(--gold);
+      border-bottom: var(--rule) solid var(--gold);
+      padding: 3.5rem 0;
+    }
+
+    .nav-horizon {
+      display: flex;
+      justify-content: center;
+      gap: 120px;
+      list-style: none;
+    }
+
+    .nav-horizon a {
+      font-family: var(--ff-body);
+      font-weight: 500;
+      font-size: 11px;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--charcoal);
+      transition: color 0.2s;
+    }
+
+    .nav-horizon a:hover { color: var(--gold); }
+
+    /* ── Footer contact ── */
+    .footer-contact a {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--charcoal);
+      opacity: 0.4;
+      transition: opacity 0.2s;
+    }
+
+    .footer-contact a:hover { opacity: 0.8; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .brand-header      { flex-direction: column; gap: 10px; }
+      .brand-header h1   { font-size: 50px; letter-spacing: 0.1em; }
+      .logo-mid img      { height: 70px; }
+      .nav-horizon       { gap: 30px; flex-direction: column; text-align: center; }
+      .nav-wrapper       { width: 90%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-ghost"></div>
+
+  <div class="container">
+
+    <header class="brand-header">
+      <h1>Last</h1>
+      <div class="logo-mid">
+        <img src="LL Logo 4.png" alt="Last Larch logo">
+      </div>
+      <h1>Larch</h1>
+    </header>
+
+    <div class="nav-wrapper">
+      <nav>
+        <ul class="nav-horizon">
+          <li><a href="about.html">About</a></li>
+          <li><a href="projects.html">Projects</a></li>
+          <li><a href="blog.html">Blog</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer-contact">
+      <a href="mailto:fysh@lastlarch.com">Contact</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
