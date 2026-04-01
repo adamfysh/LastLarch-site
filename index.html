@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Last Larch</title>
+  <link rel="stylesheet" href="last_larch.css">
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    /* ── Full viewport layout ── */
+    .stage {
+      height: 100vh;
+      display: grid;
+      grid-template-rows: 1fr auto 1fr;
+      grid-template-columns: 1fr 2px 1fr;
+      position: relative;
+    }
+
+    /* ── Vertical gold rule ── */
+    .rule-v {
+      grid-row: 1 / 4;
+      grid-column: 2;
+      background: var(--gold);
+      width: 2.5px;
+    }
+
+    /* ── Left panel ── */
+    .panel-left {
+      grid-row: 1 / 4;
+      grid-column: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 10vw 0 8vw;
+    }
+
+    .wordmark {
+      font-family: var(--ff-serif);
+      font-size: clamp(52px, 8vw, 96px);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+      margin-bottom: 40px;
+    }
+
+    .wordmark em {
+      display: block;
+      font-style: italic;
+      color: var(--gold-d);
+    }
+
+    .tagline {
+      font-family: var(--ff-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--char-l);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .tagline::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* ── Right panel ── */
+    .panel-right {
+      grid-row: 1 / 4;
+      grid-column: 3;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10vh 8vw 8vh 10vw;
+    }
+
+    /* Logo block */
+    .logo-block {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .logo-block img {
+      height: 64px;
+      width: auto;
+      opacity: 0.9;
+    }
+
+    /* Nav */
+    .nav-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 0;
+      border-top: 0.5px solid var(--ivory-d);
+      text-decoration: none;
+      color: var(--charcoal);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .nav-item:last-child {
+      border-bottom: 0.5px solid var(--ivory-d);
+    }
+
+    .nav-item:hover {
+      padding-left: 12px;
+    }
+
+    .nav-item:hover .nav-arrow {
+      transform: translateX(4px);
+      color: var(--gold);
+    }
+
+    .nav-item:hover .nav-label {
+      color: var(--charcoal);
+    }
+
+    .nav-label {
+      font-family: var(--ff-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--char-m);
+      transition: color 0.2s;
+    }
+
+    .nav-sub {
+      font-family: var(--ff-serif);
+      font-size: 22px;
+      line-height: 1.1;
+      color: var(--charcoal);
+      margin-top: 6px;
+      font-style: italic;
+    }
+
+    .nav-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-arrow {
+      font-size: 20px;
+      color: var(--ivory-d);
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    /* Contact */
+    .contact-block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .contact-block a {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--char-l);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .contact-block a:hover { color: var(--gold-d); }
+
+    .contact-mark {
+      font-family: var(--ff-serif);
+      font-size: 12px;
+      font-style: italic;
+      color: var(--ivory-d);
+    }
+
+    /* ── Horizontal gold rule across the middle ── */
+    .rule-h {
+      grid-row: 2;
+      grid-column: 1 / 4;
+      height: 2.5px;
+      background: var(--gold);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 800px) {
+      body, html { overflow: auto; }
+
+      .stage {
+        height: auto;
+        min-height: 100vh;
+        grid-template-rows: auto auto auto;
+        grid-template-columns: 1fr;
+      }
+
+      .rule-v { display: none; }
+      .rule-h { grid-row: 2; grid-column: 1; }
+
+      .panel-left {
+        grid-row: 1;
+        grid-column: 1;
+        padding: 60px 40px 48px;
+      }
+
+      .panel-right {
+        grid-row: 3;
+        grid-column: 1;
+        padding: 48px 40px 60px;
+        gap: 48px;
+      }
+
+      .logo-block { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+
+    <!-- Left: brand -->
+    <div class="panel-left">
+      <div class="wordmark">
+        Last<br><em>Larch</em>
+      </div>
+      <div class="tagline">Climate &amp; Resilience Advisory</div>
+    </div>
+
+    <!-- Gold rules -->
+    <div class="rule-h"></div>
+    <div class="rule-v"></div>
+
+    <!-- Right: logo + nav + contact -->
+    <div class="panel-right">
+
+      <div class="logo-block">
+        <img src="LL Logo 4.png" alt="Last Larch">
+      </div>
+
+      <nav class="nav-block">
+        <a href="about.html" class="nav-item">
+          <div class="nav-text">
+            <span class="nav-label">About</span>
+            <span class="nav-sub">Who we are</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+        <a href="projects.html" class="nav-item">
+          <div class="nav-text">
+            <span class="nav-label">Projects</span>
+            <span class="nav-sub">Tools &amp; frameworks</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+        <a href="blog.html" class="nav-item">
+          <div class="nav-text">
+            <span class="nav-label">Blog</span>
+            <span class="nav-sub">Thinking &amp; writing</span>
+          </div>
+          <span class="nav-arrow">→</span>
+        </a>
+      </nav>
+
+      <div class="contact-block">
+        <a href="mailto:fysh@lastlarch.com">fysh@lastlarch.com</a>
+        <span class="contact-mark">est. 2024</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
