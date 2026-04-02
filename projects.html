@@ -1,161 +1,431 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects | Last Larch</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@500&family=Karla:wght@300&family=Space+Grotesk:wght@500&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Base Styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: #F8F5EE; /* Ivory */
-            color: #1A1A1A;
-            font-family: 'Karla', sans-serif;
-            padding: 40px;
-            overflow-y: auto;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projects | Last Larch</title>
+  <link rel="stylesheet" href="last_larch.css">
+  <link rel="icon" type="image/png" href="LL Logo 4.png">
+  <style>
 
-        /* Mini Header */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 100px;
-        }
-        header h1 {
-            font-family: 'Archivo', sans-serif;
-            font-size: 1.2rem;
-            color: #D4AF37;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-        }
-        header img { height: 45px; width: auto; }
+    /* ── Nav (matches about.html) ── */
+    .site-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      border-bottom: 0.5px solid var(--ivory-d);
+    }
 
-        /* The Grid: 2 columns on desktop, 1 on mobile */
-        .project-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 80px 40px; /* Vertical gap 80px, Horizontal 40px */
-            max-width: 1100px;
-            margin: 0 auto;
-        }
+    .site-nav-logo {
+      font-family: var(--ff-serif);
+      font-size: 18px;
+      letter-spacing: 0.02em;
+      color: var(--charcoal);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .project-card {
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            transition: opacity 0.3s ease;
-        }
+    .site-nav-links {
+      display: flex;
+      list-style: none;
+      gap: 40px;
+    }
 
-        /* Thumbnail Container */
-        .thumb-box {
-            width: 100%;
-            aspect-ratio: 16 / 10; /* Cinematic wide thumbnail */
-            background-color: #f0f0e0;
-            overflow: hidden;
-            margin-bottom: 20px;
-            border: 1px solid rgba(26, 26, 26, 0.05);
-        }
+    .site-nav-links a {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--char-m);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
 
-        .thumb-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: grayscale(100%);
-            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
-        }
+    .site-nav-links a:hover { color: var(--charcoal); }
 
-        /* Hover Effects */
-        .project-card:hover .thumb-box img {
-            filter: grayscale(0%);
-            transform: scale(1.05);
-        }
+    .site-nav-links .active a {
+      color: var(--charcoal);
+      border-bottom: 2px solid var(--gold);
+      padding-bottom: 2px;
+    }
 
-        .project-card h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.2em;
-            color: #D4AF37;
-            margin-bottom: 8px;
-        }
+    .site-nav-contact a {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--char-l);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
 
-        .project-card p {
-            font-size: 0.85rem;
-            opacity: 0.6;
-            max-width: 90%;
-            line-height: 1.4;
-        }
+    .site-nav-contact a:hover { color: var(--gold-d); }
 
-        .footer-nav {
-            text-align: center;
-            margin-top: 100px;
-            padding-bottom: 40px;
-        }
-        .footer-nav a {
-            text-decoration: none;
-            color: #1A1A1A;
-            font-size: 0.7rem;
-            letter-spacing: 0.4em;
-            opacity: 0.4;
-        }
+    /* ── Page wrapper ── */
+    .projects-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 48px 80px;
+    }
 
-        @media (max-width: 768px) {
-            .project-grid { grid-template-columns: 1fr; }
-            .container { padding: 20px; }
-        }
-    </style>
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 56px;
+      padding-bottom: 24px;
+      border-bottom: 2.5px solid var(--charcoal);
+    }
+
+    .page-header-left {}
+
+    .page-eyebrow {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--char-l);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 2px;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .page-title {
+      font-family: var(--ff-serif);
+      font-size: clamp(32px, 4vw, 52px);
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+    }
+
+    .page-title em {
+      font-style: italic;
+      color: var(--gold-d);
+    }
+
+    .page-count {
+      font-family: var(--ff-serif);
+      font-size: 13px;
+      font-style: italic;
+      color: var(--char-l);
+    }
+
+    /* ── Project grid ── */
+    .project-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+    }
+
+    .project-card {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      padding: 36px;
+      border-bottom: 0.5px solid var(--ivory-d);
+      border-right: 0.5px solid var(--ivory-d);
+      transition: background 0.2s;
+    }
+
+    .project-card:nth-child(2n) {
+      border-right: none;
+    }
+
+    /* Last row — remove bottom border */
+    .project-card:nth-last-child(-n+2) {
+      border-bottom: none;
+    }
+    /* If odd number of cards, last item spans or loses border too */
+    .project-card:last-child {
+      border-bottom: none;
+    }
+
+    .project-card:hover {
+      background: var(--ivory-d);
+    }
+
+    /* Thumbnail */
+    .thumb-box {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      margin-bottom: 24px;
+      background: var(--ivory-d);
+    }
+
+    .thumb-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Project meta */
+    .project-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .project-icon {
+      height: 1em;
+      width: auto;
+      display: inline-block;
+      vertical-align: middle;
+      opacity: 0.85;
+    }
+
+    .project-title {
+      font-family: var(--ff-serif);
+      font-size: 22px;
+      line-height: 1.1;
+      color: var(--charcoal);
+    }
+
+    .project-tag {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold-d);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-tag::before {
+      content: '';
+      width: 14px;
+      height: 1.5px;
+      background: var(--gold);
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .project-desc {
+      font-family: var(--ff-body);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--char-m);
+      font-weight: 300;
+      margin-top: 12px;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 20px;
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+    }
+
+    .project-arrow {
+      font-size: 12px;
+      color: var(--gold);
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      border-top: 2.5px solid var(--charcoal);
+      padding: 40px 48px 32px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 48px;
+    }
+
+    .footer-brand {
+      font-family: var(--ff-serif);
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: var(--charcoal);
+    }
+
+    .footer-sub {
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--char-l);
+      line-height: 1.6;
+      font-family: var(--ff-body);
+    }
+
+    .footer-col-title {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--char-l);
+      margin-bottom: 16px;
+    }
+
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 10px; }
+    .footer-links a {
+      font-family: var(--ff-body);
+      font-size: 12px;
+      color: var(--char-m);
+      text-decoration: none;
+      font-weight: 300;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--gold-d); }
+
+    /* ── Responsive ── */
+    @media (max-width: 800px) {
+      .site-nav { padding: 0 24px; }
+      .site-nav-links { display: none; }
+      .projects-wrap { padding: 40px 24px 60px; }
+      .project-grid { grid-template-columns: 1fr; }
+      .project-card { border-right: none; }
+      .project-card:nth-last-child(-n+2) { border-bottom: 0.5px solid var(--ivory-d); }
+      .project-card:last-child { border-bottom: none; }
+      .site-footer { grid-template-columns: 1fr; gap: 32px; padding: 32px 24px; }
+    }
+
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>Last</h1>
-        <a href="index.html"><img src="LL Logo 4.png" alt="Logo"></a>
-        <h1>Larch</h1>
-    </header>
+  <!-- NAV -->
+  <nav class="site-nav">
+    <a href="index.html" class="site-nav-logo">
+      <img src="LL Logo 4.png" alt="Last Larch" style="height:32px; width:auto; opacity:0.85;">
+      Last Larch
+    </a>
+    <ul class="site-nav-links">
+      <li><a href="about.html">About</a></li>
+      <li class="active"><a href="projects.html">Projects</a></li>
+      <li><a href="blog.html">Blog</a></li>
+    </ul>
+    <div class="site-nav-contact">
+      <a href="mailto:fysh@lastlarch.com">Contact</a>
+    </div>
+  </nav>
 
+  <div class="projects-wrap">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header">
+      <div class="page-header-left">
+        <div class="page-eyebrow">Last Larch</div>
+        <div class="page-title">Projects &amp; <em>tools</em></div>
+      </div>
+      <div class="page-count">4 active projects</div>
+    </div>
+
+    <!-- PROJECT GRID -->
     <div class="project-grid">
-        
-        <a href="project-one.html" class="project-card">
-            <div class="thumb-box">
-                <img src="rfs_hero.png" alt="Project One">
-            </div>
-            <h2>Resilient Futures Simulator</h2>
-            <p>A climate scenario planning tool for officials, civil servants, and practitioners. Choose the state of the world at each turning point and see where 17 years leads.</p>
-        </a>
 
-        <a href="project-two.html" class="project-card">
-            <div class="thumb-box">
-                <img src="aria_hero.svg" alt="Project Two">
-            </div>
-            <h2>ARIA - Alert & Risk Impact Analysis</h2>
-            <p>A system that retrieves and summarizes  GIS data for defined polygons and for contextual emergency alerts and scenario planning.</p>
-        </a>
+      <!-- ARIA -->
+      <a href="project-aria.html" class="project-card">
+        <div class="thumb-box">
+          <img src="aria_hero.svg" alt="ARIA">
+        </div>
+        <div class="project-tag">Tool</div>
+        <div class="project-meta">
+          <img src="Untitled.png" alt="" class="project-icon">
+          <div class="project-title">ARIA</div>
+        </div>
+        <div class="project-desc">Alert &amp; Risk Impact Analysis. A system that retrieves and summarizes GIS data for defined polygons, supporting contextual emergency alerts and scenario planning.</div>
+        <div class="project-link">View project <span class="project-arrow">→</span></div>
+      </a>
 
-        <a href="project-three.html" class="project-card">
-            <div class="thumb-box">
-                <img src="thumb3.jpg" alt="Project Three">
-            </div>
-            <h2>DI:CE - Disaster Impact: Complete Events</h2>
-            <p>Blended actual and synthetic disaster impacts with global coverage and complete indicator coverage.</p>
-        </a>
+      <!-- Resilient Futures Simulator -->
+      <a href="project-rfs.html" class="project-card">
+        <div class="thumb-box">
+          <img src="rfs_hero.png" alt="Resilient Futures Simulator">
+        </div>
+        <div class="project-tag">Simulator</div>
+        <div class="project-meta">
+          <img src="Untitled2.png" alt="" class="project-icon">
+          <div class="project-title">Resilient Futures Simulator</div>
+        </div>
+        <div class="project-desc">A climate scenario planning tool for officials, civil servants, and practitioners. Choose the state of the world at each turning point and see where 17 years leads.</div>
+        <div class="project-link">View project <span class="project-arrow">→</span></div>
+      </a>
 
-        <a href="project-four.html" class="project-card">
-            <div class="thumb-box">
-                <img src="nbrhd_hero.jpg" alt="Project Four">
-            </div>
-            <h2>NBRHD - Local intelligence with open data</h2>
-            <p>Deep localization. Analyzing public data to .</p>
-        </a>
+      <!-- DI:CE -->
+      <a href="project-dice.html" class="project-card">
+        <div class="thumb-box">
+          <img src="thumb3.jpg" alt="DI:CE">
+        </div>
+        <div class="project-tag">Dataset</div>
+        <div class="project-meta">
+          <img src="Untitled3.png" alt="" class="project-icon">
+          <div class="project-title">DI:CE</div>
+        </div>
+        <div class="project-desc">Disaster Impact: Complete Events. Blended actual and synthetic disaster impacts with global coverage and complete indicator coverage.</div>
+        <div class="project-link">View project <span class="project-arrow">→</span></div>
+      </a>
+
+      <!-- NBRHD -->
+      <a href="project-nbrhd.html" class="project-card">
+        <div class="thumb-box">
+          <img src="nbrhd_hero.jpg" alt="NBRHD">
+        </div>
+        <div class="project-tag">Platform</div>
+        <div class="project-meta">
+          <img src="Untitled4.png" alt="" class="project-icon">
+          <div class="project-title">NBRHD</div>
+        </div>
+        <div class="project-desc">Local intelligence with open data. Deep localisation — analysing public data to surface neighbourhood-level insight.</div>
+        <div class="project-link">View project <span class="project-arrow">→</span></div>
+      </a>
 
     </div>
 
-    <div class="footer-nav">
-        <a href="index.html">BACK TO CORE</a>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div>
+      <div class="footer-brand">Last Larch</div>
+      <div class="footer-sub">Climate &amp; resilience advisory.<br>Deep roots. Clear sight. Honest counsel.</div>
     </div>
+    <div>
+      <div class="footer-col-title">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="about.html">About</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="blog.html">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="mailto:fysh@lastlarch.com">fysh@lastlarch.com</a></li>
+        <li><a href="#">LinkedIn</a></li>
+      </ul>
+    </div>
+  </footer>
 
 </body>
 </html>
