@@ -2,6 +2,7 @@ backend:
   name: github
   repo: adamfysh/LastLarch-site
   branch: main
+  auth_scope: repo
 
 media_folder: "images"
 public_folder: "/images"
