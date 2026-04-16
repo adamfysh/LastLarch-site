@@ -1,0 +1,15 @@
+media_folder: images
+public_folder: /images
+
+collections:
+  blog:
+    path: content/blog
+    label: Blog
+    create: true
+    fields:
+      title:
+        type: string
+      date:
+        type: datetime
+      body:
+        type: markdown
