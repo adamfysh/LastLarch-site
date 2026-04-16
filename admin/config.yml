@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: YOUR_USERNAME/YOUR_REPO
+  repo: adamfysh/LastLarch-site
   branch: main
 
 media_folder: "images"
