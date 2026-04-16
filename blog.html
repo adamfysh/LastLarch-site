@@ -4,34 +4,32 @@
   <meta charset="utf-8" />
   <title>Blog</title>
 
-  <!-- Your CSS -->
   <link rel="stylesheet" href="/last_larch.css">
-
-  <!-- Markdown renderer -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 
 <body>
-  <h1>Blog</h1>
+  <header class="blog-header">
+    <h1>Blog</h1>
+  </header>
 
-  <div id="posts"></div>
+  <main id="posts"></main>
 
   <script>
     const repo = "adamfysh/LastLarch-site";
     const folder = "content/blog";
 
-    function getTitle(md) {
+    function extractTitle(md) {
       const match = md.match(/^#\s(.+)/m);
       return match ? match[1] : "Untitled";
     }
 
-    function getDate(md) {
+    function extractDate(md) {
       const match = md.match(/^date:\s*(.+)$/m);
       return match ? match[1] : "";
     }
 
     function stripFrontmatter(md) {
-      // removes --- YAML blocks if present
       return md.replace(/^---[\s\S]*?---\n/, "");
     }
 
@@ -47,20 +45,20 @@
         const mdRes = await fetch(file.download_url);
         const raw = await mdRes.text();
 
-        const title = getTitle(raw);
-        const date = getDate(raw);
+        const title = extractTitle(raw);
+        const date = extractDate(raw);
         const body = stripFrontmatter(raw);
 
-        const card = document.createElement("div");
-        card.className = "post-card";
+        const article = document.createElement("article");
+        article.className = "post";
 
-        card.innerHTML = `
+        article.innerHTML = `
           <h2 class="post-title">${title}</h2>
-          ${date ? `<div class="post-date">${date}</div>` : ""}
-          <div class="post-body">${marked.parse(body)}</div>
+          ${date ? `<div class="post-meta">${date}</div>` : ""}
+          <div class="post-content">${marked.parse(body)}</div>
         `;
 
-        container.appendChild(card);
+        container.appendChild(article);
       }
     }
 
