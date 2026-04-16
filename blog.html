@@ -1,52 +1,369 @@
-<script>
-  const repo = "adamfysh/LastLarch-site";
-  const folder = "content/blog";
-
-  function extractTitle(md) {
-    const match = md.match(/^#\s(.+)/m);
-    return match ? match[1] : "Untitled";
-  }
-
-  function extractDate(md) {
-    const match = md.match(/^date:\s*(.+)$/m);
-    return match ? match[1] : "";
-  }
-
-  function stripFrontmatter(md) {
-    return md.replace(/^---[\s\S]*?---\n/, "");
-  }
-
-  async function loadPosts() {
-    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${folder}`);
-    let files = await res.json();
-
-    const container = document.getElementById("posts");
-
-    // NEW: newest files first (GitHub order is random)
-    files = files
-      .filter(f => f.name.endsWith(".md"))
-      .sort((a, b) => b.name.localeCompare(a.name));
-
-    for (const file of files) {
-      const mdRes = await fetch(file.download_url);
-      const raw = await mdRes.text();
-
-      const title = extractTitle(raw);
-      const date = extractDate(raw);
-      const body = stripFrontmatter(raw);
-
-      const article = document.createElement("article");
-      article.className = "post";
-
-      article.innerHTML = `
-        <h2 class="post-title">${title}</h2>
-        ${date ? `<div class="post-meta">${date}</div>` : ""}
-        <div class="post-content">${marked.parse(body)}</div>
-      `;
-
-      container.appendChild(article);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thinking – Last Larch</title>
+  <link rel="stylesheet" href="last_larch.css">
+  <style>
+    /* Blog-specific styles */
+    .blog-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 40px 60px;
     }
-  }
 
-  loadPosts();
-</script>
+    .blog-header {
+      border-bottom: var(--rule) solid var(--charcoal);
+      padding-bottom: 32px;
+      margin-bottom: 48px;
+    }
+
+    .blog-header h1 {
+      font-family: var(--ff-serif);
+      font-size: 52px;
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+      margin-bottom: 16px;
+    }
+
+    .blog-header p {
+      font-family: var(--ff-body);
+      font-size: 15px;
+      line-height: 1.7;
+      font-weight: 300;
+      color: var(--char-m);
+      max-width: 560px;
+    }
+
+    .post {
+      margin-bottom: 80px;
+      padding-bottom: 80px;
+      border-bottom: 0.5px solid var(--ivory-d);
+    }
+
+    .post:last-child {
+      border-bottom: none;
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .post-date {
+      font-family: var(--ff-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--char-l);
+    }
+
+    .post-category {
+      font-family: var(--ff-body);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold-d);
+      padding: 4px 12px;
+      border: 1px solid var(--gold-d);
+    }
+
+    .post-title {
+      font-family: var(--ff-serif);
+      font-size: 38px;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      color: var(--charcoal);
+      margin-bottom: 20px;
+    }
+
+    .post-excerpt {
+      font-family: var(--ff-body);
+      font-size: 17px;
+      line-height: 1.65;
+      font-weight: 300;
+      color: var(--char-m);
+      margin-bottom: 32px;
+      max-width: 680px;
+    }
+
+    .post-hero {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      margin-bottom: 40px;
+      border: 0.5px solid var(--ivory-d);
+    }
+
+    .post-content {
+      font-family: var(--ff-body);
+      font-size: 15px;
+      line-height: 1.8;
+      font-weight: 300;
+      color: var(--char-m);
+      max-width: 680px;
+    }
+
+    .post-content p {
+      margin-bottom: 24px;
+    }
+
+    .post-content h2 {
+      font-family: var(--ff-serif);
+      font-size: 26px;
+      line-height: 1.2;
+      color: var(--charcoal);
+      margin-top: 48px;
+      margin-bottom: 20px;
+    }
+
+    .post-content h3 {
+      font-family: var(--ff-serif);
+      font-size: 20px;
+      line-height: 1.3;
+      color: var(--charcoal);
+      margin-top: 36px;
+      margin-bottom: 16px;
+    }
+
+    .post-content img {
+      width: 100%;
+      max-width: 680px;
+      height: auto;
+      margin: 32px 0;
+      border: 0.5px solid var(--ivory-d);
+    }
+
+    .post-content blockquote {
+      border-left: var(--rule) solid var(--gold);
+      padding-left: 24px;
+      margin: 32px 0;
+      font-style: italic;
+      color: var(--char-m);
+    }
+
+    .post-content ul,
+    .post-content ol {
+      margin: 24px 0 24px 24px;
+    }
+
+    .post-content li {
+      margin-bottom: 12px;
+      padding-left: 8px;
+    }
+
+    .post-content a {
+      color: var(--charcoal);
+      text-decoration: underline;
+      text-decoration-color: var(--gold);
+      text-decoration-thickness: 1.5px;
+      text-underline-offset: 3px;
+      transition: color 0.15s;
+    }
+
+    .post-content a:hover {
+      color: var(--gold-d);
+    }
+
+    .post-video,
+    .post-embed {
+      width: 100%;
+      max-width: 680px;
+      margin: 32px 0;
+      border: 0.5px solid var(--ivory-d);
+    }
+
+    .post-video video,
+    .post-embed iframe {
+      width: 100%;
+      display: block;
+    }
+
+    .read-more {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      text-decoration: none;
+      margin-top: 24px;
+      transition: gap 0.15s;
+    }
+
+    .read-more:hover {
+      gap: 12px;
+    }
+
+    .read-more::after {
+      content: '→';
+      font-size: 14px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      font-family: var(--ff-body);
+      font-size: 13px;
+      color: var(--char-l);
+      letter-spacing: 0.1em;
+    }
+
+    .error {
+      background: #FFF5F5;
+      border: 1px solid #E53E3E;
+      color: #742A2A;
+      padding: 20px;
+      margin: 40px 0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation (reuse from your main site) -->
+  <nav class="demo-nav">
+    <div class="nav-logo">
+      <div class="nav-logo-mark">L</div>
+      <span>Last Larch</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="work.html">Work</a></li>
+      <li class="active"><a href="blog.html">Thinking</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-cta">
+      <button class="btn-primary">Get in Touch</button>
+    </div>
+  </nav>
+
+  <!-- Blog Container -->
+  <div class="blog-container">
+    <header class="blog-header">
+      <h1>Thinking</h1>
+      <p>Essays, observations, and reflections on design, craft, and the pursuit of meaningful work.</p>
+    </header>
+
+    <div id="blog-feed">
+      <div class="loading">Loading posts...</div>
+    </div>
+  </div>
+
+  <script>
+    // Fetch and render blog posts
+    async function loadBlogPosts() {
+      const feedContainer = document.getElementById('blog-feed');
+      
+      try {
+        const response = await fetch('blog-posts.json');
+        if (!response.ok) throw new Error('Could not load blog posts');
+        
+        const data = await response.json();
+        const posts = data.posts;
+
+        if (!posts || posts.length === 0) {
+          feedContainer.innerHTML = '<p class="loading">No posts yet. Add your first post to blog-posts.json!</p>';
+          return;
+        }
+
+        // Sort posts by date (newest first)
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        // Render posts
+        feedContainer.innerHTML = posts.map(post => renderPost(post)).join('');
+
+      } catch (error) {
+        console.error('Error loading blog:', error);
+        feedContainer.innerHTML = `
+          <div class="error">
+            <strong>Unable to load blog posts.</strong><br>
+            Make sure blog-posts.json exists in the same directory as this HTML file.
+          </div>
+        `;
+      }
+    }
+
+    function renderPost(post) {
+      const date = new Date(post.date);
+      const formattedDate = date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      });
+
+      const categoryTag = post.category 
+        ? `<span class="post-category">${post.category}</span>` 
+        : '';
+
+      const heroImage = post.heroImage 
+        ? `<img src="${post.heroImage}" alt="${post.title}" class="post-hero">` 
+        : '';
+
+      const excerpt = post.excerpt 
+        ? `<p class="post-excerpt">${post.excerpt}</p>` 
+        : '';
+
+      // Process content for images, videos, and embeds
+      const processedContent = processContent(post.content);
+
+      return `
+        <article class="post">
+          <div class="post-meta">
+            <time class="post-date" datetime="${post.date}">${formattedDate}</time>
+            ${categoryTag}
+          </div>
+          <h2 class="post-title">${post.title}</h2>
+          ${excerpt}
+          ${heroImage}
+          <div class="post-content">
+            ${processedContent}
+          </div>
+        </article>
+      `;
+    }
+
+    function processContent(content) {
+      if (!content) return '';
+      
+      // Convert array of paragraphs to HTML
+      if (Array.isArray(content)) {
+        return content.map(item => {
+          if (typeof item === 'string') {
+            return `<p>${item}</p>`;
+          } else if (item.type === 'image') {
+            return `<img src="${item.src}" alt="${item.alt || ''}" loading="lazy">`;
+          } else if (item.type === 'video') {
+            return `<div class="post-video"><video src="${item.src}" controls ${item.autoplay ? 'autoplay' : ''} ${item.loop ? 'loop' : ''} ${item.muted ? 'muted' : ''}></video></div>`;
+          } else if (item.type === 'embed') {
+            return `<div class="post-embed"><iframe src="${item.src}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+          } else if (item.type === 'heading') {
+            const level = item.level || 2;
+            return `<h${level}>${item.text}</h${level}>`;
+          } else if (item.type === 'quote') {
+            return `<blockquote>${item.text}</blockquote>`;
+          }
+          return '';
+        }).join('');
+      }
+      
+      // If it's just a string, wrap it in a paragraph
+      return `<p>${content}</p>`;
+    }
+
+    // Load posts when page loads
+    document.addEventListener('DOMContentLoaded', loadBlogPosts);
+  </script>
+
+</body>
+</html>
