@@ -1,68 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <title>Blog</title>
+<script>
+  const repo = "adamfysh/LastLarch-site";
+  const folder = "content/blog";
 
-  <link rel="stylesheet" href="/last_larch.css">
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-</head>
+  function extractTitle(md) {
+    const match = md.match(/^#\s(.+)/m);
+    return match ? match[1] : "Untitled";
+  }
 
-<body>
-  <header class="blog-header">
-    <h1>Blog</h1>
-  </header>
+  function extractDate(md) {
+    const match = md.match(/^date:\s*(.+)$/m);
+    return match ? match[1] : "";
+  }
 
-  <main id="posts"></main>
+  function stripFrontmatter(md) {
+    return md.replace(/^---[\s\S]*?---\n/, "");
+  }
 
-  <script>
-    const repo = "adamfysh/LastLarch-site";
-    const folder = "content/blog";
+  async function loadPosts() {
+    const res = await fetch(`https://api.github.com/repos/${repo}/contents/${folder}`);
+    let files = await res.json();
 
-    function extractTitle(md) {
-      const match = md.match(/^#\s(.+)/m);
-      return match ? match[1] : "Untitled";
+    const container = document.getElementById("posts");
+
+    // NEW: newest files first (GitHub order is random)
+    files = files
+      .filter(f => f.name.endsWith(".md"))
+      .sort((a, b) => b.name.localeCompare(a.name));
+
+    for (const file of files) {
+      const mdRes = await fetch(file.download_url);
+      const raw = await mdRes.text();
+
+      const title = extractTitle(raw);
+      const date = extractDate(raw);
+      const body = stripFrontmatter(raw);
+
+      const article = document.createElement("article");
+      article.className = "post";
+
+      article.innerHTML = `
+        <h2 class="post-title">${title}</h2>
+        ${date ? `<div class="post-meta">${date}</div>` : ""}
+        <div class="post-content">${marked.parse(body)}</div>
+      `;
+
+      container.appendChild(article);
     }
+  }
 
-    function extractDate(md) {
-      const match = md.match(/^date:\s*(.+)$/m);
-      return match ? match[1] : "";
-    }
-
-    function stripFrontmatter(md) {
-      return md.replace(/^---[\s\S]*?---\n/, "");
-    }
-
-    async function loadPosts() {
-      const res = await fetch(`https://api.github.com/repos/${repo}/contents/${folder}`);
-      const files = await res.json();
-
-      const container = document.getElementById("posts");
-
-      for (const file of files) {
-        if (!file.name.endsWith(".md")) continue;
-
-        const mdRes = await fetch(file.download_url);
-        const raw = await mdRes.text();
-
-        const title = extractTitle(raw);
-        const date = extractDate(raw);
-        const body = stripFrontmatter(raw);
-
-        const article = document.createElement("article");
-        article.className = "post";
-
-        article.innerHTML = `
-          <h2 class="post-title">${title}</h2>
-          ${date ? `<div class="post-meta">${date}</div>` : ""}
-          <div class="post-content">${marked.parse(body)}</div>
-        `;
-
-        container.appendChild(article);
-      }
-    }
-
-    loadPosts();
-  </script>
-</body>
-</html>
+  loadPosts();
+</script>
