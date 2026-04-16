@@ -343,7 +343,23 @@ body {
 .blog-title   { font-family: var(--ff-serif); font-size: 17px; margin-bottom: 6px; }
 .blog-excerpt { font-size: 13px; color: var(--char-m); font-weight: 300; line-height: 1.6; }
 
+.post {
+  margin-bottom: 40px;
+}
 
+.post-title {
+  margin: 0 0 5px 0;
+}
+
+.post-meta {
+  opacity: 0.6;
+  font-size: 0.85em;
+  margin-bottom: 12px;
+}
+
+.post-content {
+  line-height: 1.6;
+}
 /* ── Footer ──────────────────────────────────────────────── */
 
 .demo-footer {
