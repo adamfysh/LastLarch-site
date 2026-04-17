@@ -474,31 +474,29 @@
             <h2 class="section-heading">Key Features</h2>
             <div class="features-list">
                 <div class="feature-item">
-                    <div class="feature-title">Interactive Mapping</div>
+                    <div class="feature-title">Flexible Mapping</div>
                     <div class="feature-desc">
-                        Draw custom polygons or use predefined zones to select affected areas 
-                        with precision.
+                        Import warning polygons or draw custom polygons to select affected areas.
                     </div>
                 </div>
                 <div class="feature-item">
                     <div class="feature-title">Multi-Source Data</div>
                     <div class="feature-desc">
-                        Automatically queries census data, building footprints, infrastructure 
-                        databases, and elevation models.
+                        Users define source layers. Web links to live GIS files or locally saved libraries. Any polygon or point data.
                     </div>
                 </div>
                 <div class="feature-item">
                     <div class="feature-title">Instant Reports</div>
                     <div class="feature-desc">
-                        Generate spreadsheets with population counts, vulnerable populations, 
-                        and asset exposure in seconds.
+                        Generate spreadsheets with population counts, vulnerability characteristics, 
+                        and asset details in seconds. "How many schools? With how many students?"
                     </div>
                 </div>
                 <div class="feature-item">
                     <div class="feature-title">CAP Compliance</div>
                     <div class="feature-desc">
-                        Automated conversion of exposure data into properly formatted CAP-compliant 
-                        warning messages.
+                        Automated conversion of exposure data into XML-formatted CAP-compliant 
+                        warning messages. Separated by sector and scale.
                     </div>
                 </div>
                 <div class="feature-item">
@@ -531,16 +529,17 @@
             <h2 class="section-heading">Technical Implementation</h2>
             <div class="text-single">
                 <p>
-                    ARIA is built on a Python backend with QGIS for spatial operations. User-defined 
+                    ARIA is built to be easy. Users can run the system locally in a browser. User-defined 
                     polygons are converted to GeoJSON and used to query multiple GIS data sources 
                     simultaneously. The system uses spatial indexing to ensure queries complete in 
-                    under 5 seconds even for large metropolitan areas.
+                    under 5 seconds even for large areas.
                 </p>
                 <p>
                     Data is normalized and aggregated according to configurable templates, then 
-                    exported to Excel for manual review or passed to the CAP generation engine. 
-                    The CAP engine uses natural language templates with data-driven substitution 
-                    to create warnings that are both technically accurate and readable.
+                    exported to a spreadsheet for manual review or passed to the CAP generation engine. 
+                    The CAP engine allows users to connect their preferred LLM via API to call a <b>library of 
+                    user-validated warning messages</b> to instantly connect hazard-severity-location relevant to the layers 
+                    extracted from the map files.
                 </p>
             </div>
         </section>
@@ -549,23 +548,23 @@
         <div class="specs-table">
             <div class="spec-row">
                 <div class="spec-label">Data Sources</div>
-                <div class="spec-value">Census Bureau, USGS, State GIS databases, FEMA infrastructure data</div>
+                <div class="spec-value">Line Ministries, ARC-GIS, ReliefWeb, local government</div>
             </div>
             <div class="spec-row">
-                <div class="spec-label">Query Performance</div>
-                <div class="spec-value">< 5 seconds for metropolitan areas, < 2 seconds for rural zones</div>
+                <div class="spec-label">Input Parameters</div>
+                <div class="spec-value"> GEO Json, ArcGIS REST, ShapeFiles, WFS endpoints </div>
             </div>
             <div class="spec-row">
                 <div class="spec-label">Output Formats</div>
                 <div class="spec-value">XLSX, CSV, CAP-XML, JSON</div>
             </div>
             <div class="spec-row">
-                <div class="spec-label">Integration</div>
-                <div class="spec-value">REST API, command-line interface, web dashboard</div>
+                <div class="spec-label">Model Integration</div>
+                <div class="spec-value">OpenAI, Anthropic, Gemini, OpenRouter, open models</div>
             </div>
             <div class="spec-row">
                 <div class="spec-label">Deployment</div>
-                <div class="spec-value">On-premise servers, AWS compatible, Docker containerized</div>
+                <div class="spec-value">Local servers, AWS compatible, Docker containerized</div>
             </div>
         </div>
 
