@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thinking – Last Larch</title>
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="last_larch.css">
   <style>
     /* Blog-specific styles */
@@ -262,32 +262,52 @@
   </div>
 
 <script>
-  async function loadBlogPosts() {
-    const feedContainer = document.getElementById('blog-feed');
+ async function loadBlogPosts() {
+  const feedContainer = document.getElementById('blog-feed');
+  
+  try {
+    // 1. Fetch your index file
     const response = await fetch('blog-posts.json');
     const data = await response.json();
+    
+    // 2. Sort posts by date (newest first)
+    const posts = data.posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const postHTMLs = await Promise.all(data.posts.map(async (post) => {
-      // Fetch the file you converted from Word
-      const mdResponse = await fetch(post.markdownFile);
-      const mdText = await mdResponse.text();
-      
-      // Convert it to HTML
-      const htmlBody = marked.parse(mdText);
+    // 3. Process each post
+    const postHTMLs = await Promise.all(posts.map(async (post) => {
+      try {
+        // Fetch the converted Word file
+        const mdResponse = await fetch(post.markdownFile);
+        const mdText = await mdResponse.text();
+        
+        // Use Marked.js to turn MD into HTML
+        const htmlContent = marked.parse(mdText);
 
-      return `
-        <article class="post">
-          <div class="post-meta">
-            <time class="post-date">${post.date}</time>
-            <span class="post-category">${post.category}</span>
-          </div>
-          <h2 class="post-title">${post.title}</h2>
-          <div class="post-content">${htmlBody}</div>
-        </article>
-      `;
+        return `
+          <article class="post">
+            <div class="post-meta">
+              <time class="post-date">${post.date}</time>
+              <span class="post-category">${post.category}</span>
+            </div>
+            <h2 class="post-title">${post.title}</h2>
+            <div class="post-content">
+              ${htmlContent}
+            </div>
+          </article>
+        `;
+      } catch (err) {
+        console.error("Could not load post file:", post.markdownFile);
+        return ""; // Skip this post if the file is missing
+      }
     }));
+
     feedContainer.innerHTML = postHTMLs.join('');
+  } catch (error) {
+    console.error("Error loading blog feed:", error);
+    feedContainer.innerHTML = `<p>Error loading posts. Check the console.</p>`;
   }
-  document.addEventListener('DOMContentLoaded', loadBlogPosts);
+}
+
+document.addEventListener('DOMContentLoaded', loadBlogPosts);
 </script>
 </html>
