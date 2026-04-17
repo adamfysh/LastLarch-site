@@ -3,143 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Detail | Last Larch</title>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500&family=Karla:wght@300&family=Space+Grotesk:wght@500&display=swap" rel="stylesheet">
+    <title>Resilient Futures Simulator – Last Larch</title>
+    <link rel="stylesheet" href="last_larch.css">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: #FFFFF0;
-            color: #1A1A1A;
-            font-family: 'Karla', sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Consistent Mini Header */
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 40px;
-        }
-        header h1 {
-            font-family: 'Archivo', sans-serif;
-            font-size: 1.2rem;
-            color: #D4AF37;
-            text-transform: uppercase;
-            letter-spacing: 0.3em;
-        }
-        header img { height: 45px; width: auto; }
-
-        /* Main Content Container */
-        .project-content {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px 100px 20px;
-        }
-
-        /* Large Hero Image */
-        .hero-image {
-            width: 100%;
-            height: 70vh;
-            background-color: #eee;
-            margin-bottom: 60px;
-            overflow: hidden;
-        }
-        .hero-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Project Text */
-        .project-header {
-            border-bottom: 1px solid #D4AF37;
-            padding-bottom: 30px;
-            margin-bottom: 40px;
-        }
-        .project-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-        .project-meta {
-            font-size: 0.8rem;
-            color: #D4AF37;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-        }
-
+        /* Only keep unique "Editorial" layout styles here */
         .project-description {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            column-count: 2; /* Editorial style */
-            column-gap: 40px;
-            margin-bottom: 60px;
+            column-count: 2;
+            column-gap: 48px;
+            margin: 40px 0;
         }
 
-        /* Secondary Images */
         .image-gallery {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 24px;
+            margin-top: 40px;
         }
-        .image-gallery img { width: 100%; }
-
-        /* Navigation */
-        .bottom-nav {
-            margin-top: 100px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.7rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-        }
-        .bottom-nav a { text-decoration: none; color: #1A1A1A; opacity: 0.5; }
-        .bottom-nav a:hover { opacity: 1; color: #D4AF37; }
 
         @media (max-width: 768px) {
             .project-description { column-count: 1; }
-            .hero-image { height: 40vh; }
             .image-gallery { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Last</h1>
-        <a href="index.html"><img src="LL Logo 4.png" alt="Logo"></a>
-        <h1>Larch</h1>
-    </header>
-
-    <main class="project-content">
-        <div class="hero-image">
-            <img src="aria_hero.svg" alt="ARIA">
+    <nav class="demo-nav">
+        <a href="index.html" class="nav-logo">
+            <img src="LL Logo 4.png" alt="Last Larch" style="height:32px; width:auto;">
+            Last Larch
+        </a>
+        <ul class="nav-links">
+            <li><a href="about.html">About</a></li>
+            <li class="active"><a href="projects.html">Projects</a></li>
+            <li><a href="blog.html">Blog</a></li>
+        </ul>
+        <div class="nav-cta">
+            <a href="mailto:fysh@lastlarch.com" class="btn-primary">Contact</a>
         </div>
+    </nav>
 
-        <div class="project-header">
-            <h2>ARIA: Alert & Risk Impact Analysis </h2>
-            <div class="project-meta">2026 // Common Alerting Protocol (CAP) // GIS</div>
-        </div>
+    <div class="blog-container">
+        <article class="post">
+            <div class="post-meta">
+                <time class="post-date">2026</time>
+                <span class="post-category">Resilience Planning</span>
+            </div>
+            
+            <h1 class="post-title" style="font-size: 52px;">Resilient Futures Simulator</h1>
+            
+            <div class="post-content">
+                <img src="rfs_hero.png" alt="Project Hero" style="width:100%; height: auto;">
 
-        <div class="project-description">
-            A system that retrieves and summarizes the exposure data in GIS layers and for defined polygons. Extraction to a spreadsheet or machine-generated summaries for use in CAP-Alerts.
-        </div>
+                <div class="project-description">
+                    <p>A scenario planning tool for officials, civil servants, and NGO practitioners. Choose the state of the world at each turning point — and see where 17 years leads.</p>
+                </div>
 
-        <div class="image-gallery">
-            <img src="detail-1.jpg" alt="Detail 1">
-            <img src="detail-2.jpg" alt="Detail 2">
-        </div>
+                <div class="image-gallery">
+                    <img src="detail-1.jpg" alt="Detail 1">
+                    <img src="detail-2.jpg" alt="Detail 2">
+                </div>
+            </div>
 
-        <div class="bottom-nav">
-            <a href="projects.html">← All Projects</a>
-            <a href="index.html">Home</a>
-        </div>
-    </main>
+            <div style="margin-top: 80px; padding-top: 40px; border-top: 0.5px solid var(--ivory-d); display: flex; justify-content: space-between;">
+                <a href="projects.html" class="read-more" style="flex-direction: row-reverse;">All Projects</a>
+                <a href="index.html" class="read-more">Home</a>
+            </div>
+        </article>
+    </div>
 
 </body>
 </html>
