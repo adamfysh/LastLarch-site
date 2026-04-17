@@ -1,6 +1,10 @@
 {
-  "title": "This is a blog post",
-  "date": "2026-04-17",
-  "category": "Testing",
-  "markdownFile": "posts/blog1.md"
+  "posts": [
+    {
+      "title": "My Word Post",
+      "date": "2026-04-17",
+      "category": "Testing",
+      "markdownFile": "posts/blog1.md"
+    }
+  ]
 }
