@@ -416,16 +416,15 @@
                     irrelevance. ARIA was developed to bridge between warnings, GIS exposure data and actionable messages.
                 </p>
                 <p>
-                    By allowing forecasters to draw polygons over affected areas, the system 
+                    By allowing users to draw or import polygons over affected areas, the system 
                     instantly retrieves demographic data, infrastructure information, and exposure 
-                    statistics. This data can be exported for analysis or automatically transformed 
-                    into standardized warning language that meets Common Alerting Protocol (CAP) 
-                    requirements.
+                    statistics from pre-defined libraries. This data can be exported for analysis or automatically transformed 
+                    into pre-validated warning language that can be ported directly into Common Alerting Protocol (CAP).
                 </p>
                 <p>
                     The result is faster, more accurate warnings that help communities prepare 
-                    for and respond to weather emergencies. What once took hours of manual data 
-                    gathering and analysis now happens in minutes.
+                    for and respond to  emergencies. What once took hours of manual data 
+                    gathering and analysis can now happen in seconds
                 </p>
             </div>
         </section>
@@ -441,15 +440,25 @@
             <h2 class="section-heading">The Challenge</h2>
             <div class="text-single">
                 <p>
-                    Traditional warning workflows relied on forecasters manually cross-referencing 
-                    multiple data sources: census data, building inventories, critical infrastructure 
-                    databases, and topographic maps. This process was time-consuming and error-prone, 
-                    especially during rapidly evolving weather situations.
+                    Warning messages usually don't do better than generating a relatively generic warning that 
+                    characterizes the phenomenon "It will rain approximately 115mm between 12h00 and 22h00." 
+                    In some cases, it may suggest "Please take precautions in low-lying areas." In the best 
+                    cases, an Impact-Based Forecast will pull from <a href="https://www.worldpop.org/case_studies/measuring-populations-exposed-to-disasters">World Pop</a>
+                    to give an estimate of how many people live inside the affected area. 
+                    
+                    This is inadquate for action. It is fails to account for the different scales, sectors, 
+                    priorities and needs of people who can make a difference when it comes to disaster impact. 
+                    It is not realistic for warning authorities to manually cross-reference 
+                    multiple data sources across sectors: census data, building inventories, critical infrastructure 
+                    databases, and topographic maps. The time it would take to do this would imply unacceptable sacrifices
+                    in timeliness of the warnings.
                 </p>
                 <p>
-                    Additionally, warnings needed to comply with CAP standards for interoperability 
-                    with emergency management systems nationwide. Hand-crafting compliant messages 
-                    added another layer of complexity to an already stressful process.
+                    There is nothing stopping any country or community from creating protocols that can articulate
+                    differentiated warnings depending on geography, sector, scale or priority. A custom distribution 
+                    list of emergency managers, public-safety operators and people critical infrastructure could be 
+                    prepared in advance and receive messages appropriate to their context. Similarly, agricultural regions
+                    could be targeted with regional cell broadcasts or radio messages with distinct and useful warning messages for their contexts. 
                 </p>
             </div>
         </section>
