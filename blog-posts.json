@@ -1,13 +1,14 @@
 {
   "posts": [
     {
-      "date": "2024-04-15",
-      "title": "On Restraint in Digital Design",
-      "category": "Design Philosophy",
-      "excerpt": "In an age of infinite possibilities, the most powerful tool a designer wields is the ability to say no. A meditation on constraint as creative freedom.",
+      "date": "2024-04-16",
+      "title": "Connecting Early Action protocols to Early Warning Systems",
+      "category": "Early Warning",
+      "excerpt": "If the objective of an early warning system is to save lives and protect assets, then no degree of perfection in hazard observation or message dissemination will matter if people don't know what to do.",
       "heroImage": "images/blog/restraint-hero.jpg",
       "content": [
-        "There's a peculiar paradox at the heart of contemporary digital design: we have never had more tools, more frameworks, more possibilities at our fingertips—and yet the most compelling work often emerges from radical constraint.",
+        "There are some really obvious problems with how early warning sytems work. One of them relates to the fact that people do not necessarily know what to do when an alert is issued. <p> Let's say you're responsible for operations at courier service or logistics operator. The warning says "There will be 115mm of rain in the next 20 hours. It will largely affect low-lying areas." Incidentally, that would already be a better warning than you'd get in most contexts. 
+        <p> There's a peculiar paradox at the heart of contemporary digital design: we have never had more tools, more frameworks, more possibilities at our fingertips—and yet the most compelling work often emerges from radical constraint.",
         "I've been thinking about this while working on a recent project. The client wanted 'everything'—animations, gradients, custom cursors, parallax scrolling. The usual wishlist. But somewhere in the conversation, I asked a different question: What if we did less?",
         {
           "type": "heading",
