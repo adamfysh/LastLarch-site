@@ -1,10 +1,6 @@
 {
-  "posts": [
-    {
-      "title": "The Last Larch",
-      "date": "2026-04-17",
-      "category": "Design",
-      "markdownFile": "posts/2026-04-17-last-larch.md"
-    }
-  ]
+  "title": "This is a blog post",
+  "date": "2026-04-17",
+  "category": "Testing",
+  "markdownFile": "posts/blog1.md"
 }
