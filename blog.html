@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Thinking – Last Larch</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="last_larch.css">
   <style>
     /* Blog-specific styles */
@@ -261,21 +261,20 @@
     </div>
   </div>
 
-  <script>
-    // Fetch and render blog posts
-async function loadBlogPosts() {
-  const feedContainer = document.getElementById('blog-feed');
-  
-  try {
+<script>
+  async function loadBlogPosts() {
+    const feedContainer = document.getElementById('blog-feed');
     const response = await fetch('blog-posts.json');
     const data = await response.json();
-    
-    // Fetch all markdown files in parallel
+
     const postHTMLs = await Promise.all(data.posts.map(async (post) => {
+      // Fetch the file you converted from Word
       const mdResponse = await fetch(post.markdownFile);
       const mdText = await mdResponse.text();
-      const htmlContent = marked.parse(mdText);
       
+      // Convert it to HTML
+      const htmlBody = marked.parse(mdText);
+
       return `
         <article class="post">
           <div class="post-meta">
@@ -283,103 +282,12 @@ async function loadBlogPosts() {
             <span class="post-category">${post.category}</span>
           </div>
           <h2 class="post-title">${post.title}</h2>
-          <div class="post-content">${htmlContent}</div>
+          <div class="post-content">${htmlBody}</div>
         </article>
       `;
     }));
-
     feedContainer.innerHTML = postHTMLs.join('');
-  } catch (error) {
-    feedContainer.innerHTML = `<div class="error">Check console for errors.</div>`;
   }
-}
-        // Sort posts by date (newest first)
-        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-        // Render posts
-        feedContainer.innerHTML = posts.map(post => renderPost(post)).join('');
-
-      } catch (error) {
-        console.error('Error loading blog:', error);
-        feedContainer.innerHTML = `
-          <div class="error">
-            <strong>Unable to load blog posts.</strong><br>
-            Make sure blog-posts.json exists in the same directory as this HTML file.
-          </div>
-        `;
-      }
-    }
-
-    function renderPost(post) {
-      const date = new Date(post.date);
-      const formattedDate = date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-
-      const categoryTag = post.category 
-        ? `<span class="post-category">${post.category}</span>` 
-        : '';
-
-      const heroImage = post.heroImage 
-        ? `<img src="${post.heroImage}" alt="${post.title}" class="post-hero">` 
-        : '';
-
-      const excerpt = post.excerpt 
-        ? `<p class="post-excerpt">${post.excerpt}</p>` 
-        : '';
-
-      // Process content for images, videos, and embeds
-      const processedContent = processContent(post.content);
-
-      return `
-        <article class="post">
-          <div class="post-meta">
-            <time class="post-date" datetime="${post.date}">${formattedDate}</time>
-            ${categoryTag}
-          </div>
-          <h2 class="post-title">${post.title}</h2>
-          ${excerpt}
-          ${heroImage}
-          <div class="post-content">
-            ${processedContent}
-          </div>
-        </article>
-      `;
-    }
-
-    function processContent(content) {
-      if (!content) return '';
-      
-      // Convert array of paragraphs to HTML
-      if (Array.isArray(content)) {
-        return content.map(item => {
-          if (typeof item === 'string') {
-            return `<p>${item}</p>`;
-          } else if (item.type === 'image') {
-            return `<img src="${item.src}" alt="${item.alt || ''}" loading="lazy">`;
-          } else if (item.type === 'video') {
-            return `<div class="post-video"><video src="${item.src}" controls ${item.autoplay ? 'autoplay' : ''} ${item.loop ? 'loop' : ''} ${item.muted ? 'muted' : ''}></video></div>`;
-          } else if (item.type === 'embed') {
-            return `<div class="post-embed"><iframe src="${item.src}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
-          } else if (item.type === 'heading') {
-            const level = item.level || 2;
-            return `<h${level}>${item.text}</h${level}>`;
-          } else if (item.type === 'quote') {
-            return `<blockquote>${item.text}</blockquote>`;
-          }
-          return '';
-        }).join('');
-      }
-      
-      // If it's just a string, wrap it in a paragraph
-      return `<p>${content}</p>`;
-    }
-
-    // Load posts when page loads
-    document.addEventListener('DOMContentLoaded', loadBlogPosts);
-  </script>
-
-</body>
+  document.addEventListener('DOMContentLoaded', loadBlogPosts);
+</script>
 </html>
