@@ -263,27 +263,35 @@
 
   <script>
     // Fetch and render blog posts
-    async function renderPost(post) {
-  // 1. Fetch the actual text from the .md file
-  const response = await fetch(post.markdownFile);
-  const markdownText = await response.text();
+async function loadBlogPosts() {
+  const feedContainer = document.getElementById('blog-feed');
+  
+  try {
+    const response = await fetch('blog-posts.json');
+    const data = await response.json();
+    
+    // Fetch all markdown files in parallel
+    const postHTMLs = await Promise.all(data.posts.map(async (post) => {
+      const mdResponse = await fetch(post.markdownFile);
+      const mdText = await mdResponse.text();
+      const htmlContent = marked.parse(mdText);
+      
+      return `
+        <article class="post">
+          <div class="post-meta">
+            <time class="post-date">${post.date}</time>
+            <span class="post-category">${post.category}</span>
+          </div>
+          <h2 class="post-title">${post.title}</h2>
+          <div class="post-content">${htmlContent}</div>
+        </article>
+      `;
+    }));
 
-  // 2. Convert Markdown to HTML using the library
-  const htmlContent = marked.parse(markdownText);
-
-  // 3. Return the HTML (keeping your existing CSS classes)
-  return `
-    <article class="post">
-      <div class="post-meta">
-        <time class="post-date">${post.date}</time>
-        <span class="post-category">${post.category}</span>
-      </div>
-      <h2 class="post-title">${post.title}</h2>
-      <div class="post-content">
-        ${htmlContent}
-      </div>
-    </article>
-  `;
+    feedContainer.innerHTML = postHTMLs.join('');
+  } catch (error) {
+    feedContainer.innerHTML = `<div class="error">Check console for errors.</div>`;
+  }
 }
         // Sort posts by date (newest first)
         posts.sort((a, b) => new Date(b.date) - new Date(a.date));
