@@ -425,10 +425,10 @@ body {
 .btn-primary:hover {
   opacity: 0.8;
 }
-/* ── Custom Tables (Last Larch Extension) ────────────────── */
+/* ── Custom Tables (Last Larch — Relaxed & Elegant) ────────────────── */
 
 .table-wrapper {
-  margin: 40px 0;
+  margin: 80px 0; /* Huge vertical buffer between sections */
   border-top: var(--rule) solid var(--charcoal);
   overflow-x: auto;
 }
@@ -442,36 +442,40 @@ body {
 
 .larch-table thead th {
   font-family: var(--ff-serif);
-  font-size: 18px;
+  font-size: 20px;
   color: var(--charcoal);
   text-align: left;
-  padding: 20px 15px;
+  padding: 32px 24px; /* Deep padding for header */
   background-color: var(--ivory-d);
   border-bottom: 1px solid var(--gold);
 }
 
 .larch-table td {
-  padding: 18px 15px;
+  padding: 32px 24px; /* Maximum air around the text */
   border-bottom: 0.5px solid var(--ivory-d);
   vertical-align: top;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.8; /* Tall line height to prevent density */
 }
 
+/* The ID Column (A1, B1, etc.) */
 .larch-table .id-cell {
   font-family: var(--ff-serif);
-  color: var(--gold-d);
-  font-weight: bold;
-  font-size: 16px;
-  width: 60px;
+  color: var(--gold-d); /* Dark Gold as requested */
+  font-weight: 400;
+  font-size: 20px;
+  width: 120px; /* Wide column to create a left-side margin effect */
+  padding-left: 32px; /* Extra buffer from the left edge */
 }
 
+/* The Theme Column */
 .larch-table .theme-cell {
   font-weight: 500;
   color: var(--charcoal);
-  width: 200px;
+  width: 280px; /* Prevents themes from wrapping too aggressively */
+  font-size: 16px;
 }
 
 .larch-table tr:hover {
-  background-color: rgba(200, 168, 75, 0.05); /* Very subtle gold tint */
+  background-color: rgba(200, 168, 75, 0.03); /* Subtle gold breath on hover */
 }
