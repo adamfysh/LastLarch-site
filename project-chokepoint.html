@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chokepoint Dependency Model: Technical Methodology &mdash; Last Larch</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Karla:wght@300;400;500&display=swap');
+:root {
+  --ivory:#F4F0E6; --ivory-d:#EAE4D4;
+  --gold:#C8A84B; --gold-l:#D4B96A; --gold-d:#A07830;
+  --charcoal:#2A2722; --char-m:#4A4540; --char-l:#7A7570;
+  --rule:2.5px;
+  --ff-serif:'DM Serif Display',Georgia,serif;
+  --ff-body:'Karla','Helvetica Neue',sans-serif;
+  --ff-mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--ivory);color:var(--charcoal);font-family:var(--ff-body);font-weight:300;}
+
+/* ── Nav ── */
+nav{background:var(--ivory);border-bottom:var(--rule) solid var(--charcoal);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;}
+.nav-logo{display:flex;align-items:center;gap:12px;font-family:var(--ff-serif);font-size:18px;color:var(--charcoal);text-decoration:none;}
+.nav-logo img{height:30px;width:auto;}
+.nav-links{display:flex;list-style:none;gap:0;height:60px;align-items:stretch;}
+.nav-links li{display:flex;align-items:center;border-left:0.5px solid var(--ivory-d);}
+.nav-links a{padding:0 20px;font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--char-m);text-decoration:none;}
+.nav-links .active a{color:var(--charcoal);border-bottom:var(--rule) solid var(--gold);margin-bottom:-3px;}
+
+/* ── Project header ── */
+.project-header{background:var(--ivory);border-bottom:var(--rule) solid var(--charcoal);padding:80px 32px 64px;max-width:900px;margin:0 auto;}
+.project-eyebrow{font-family:var(--ff-body);font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--gold);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.project-eyebrow::before{content:'';display:block;width:32px;height:var(--rule);background:var(--gold);}
+.project-title{font-family:var(--ff-serif);font-size:52px;line-height:1.05;letter-spacing:-0.02em;color:var(--charcoal);margin-bottom:24px;max-width:720px;}
+.project-subtitle{font-family:var(--ff-body);font-size:17px;line-height:1.65;font-weight:300;color:var(--char-m);max-width:580px;margin-bottom:40px;}
+.project-meta{display:flex;gap:48px;padding-top:32px;border-top:0.5px solid var(--ivory-d);flex-wrap:wrap;}
+.meta-item{display:flex;flex-direction:column;gap:6px;}
+.meta-label{font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--char-l);}
+.meta-value{font-size:14px;font-weight:400;color:var(--charcoal);}
+
+/* ── Content ── */
+.project-content{max-width:900px;margin:0 auto;padding:0 32px 80px;}
+.content-section{margin-bottom:72px;padding-top:64px;border-top:0.5px solid var(--ivory-d);}
+.content-section:first-child{border-top:none;}
+.section-heading{font-family:var(--ff-serif);font-size:28px;line-height:1.2;letter-spacing:-0.01em;color:var(--charcoal);margin-bottom:24px;}
+.text-single{font-family:var(--ff-body);font-size:15px;line-height:1.75;font-weight:300;color:var(--char-m);max-width:640px;}
+.text-single p{margin-bottom:20px;}
+.text-single a{color:var(--gold-d);text-decoration:none;border-bottom:0.5px solid var(--gold-l);}
+.text-columns{column-count:2;column-gap:48px;font-size:15px;line-height:1.75;font-weight:300;color:var(--char-m);}
+.text-columns p{margin-bottom:18px;}
+.pullquote{font-family:var(--ff-serif);font-size:22px;line-height:1.35;letter-spacing:-0.01em;color:var(--charcoal);padding:40px 0 40px 32px;border-left:var(--rule) solid var(--gold);margin:56px 0;font-style:italic;}
+.rule-gold{height:var(--rule);background:var(--gold);margin:48px 0;}
+
+/* ── Specs table ── */
+.specs-table{border-top:var(--rule) solid var(--charcoal);margin:32px 0;}
+.spec-row{display:grid;grid-template-columns:200px 1fr;border-bottom:0.5px solid var(--ivory-d);padding:14px 0;gap:32px;align-items:baseline;}
+.spec-label{font-size:10px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--char-l);}
+.spec-value{font-size:14px;font-weight:300;color:var(--char-m);line-height:1.6;}
+.spec-value code{font-family:var(--ff-mono);font-size:12px;background:var(--ivory-d);padding:1px 5px;color:var(--charcoal);}
+.spec-value strong{font-weight:500;color:var(--charcoal);}
+
+/* ── Feature list (ARIA style) ── */
+.features-list{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:var(--rule) solid var(--charcoal);margin-top:32px;}
+.feature-item{padding:24px 20px 24px 0;border-right:0.5px solid var(--ivory-d);border-bottom:0.5px solid var(--ivory-d);}
+.feature-item:nth-child(3n){border-right:none;}
+.feature-num{font-family:var(--ff-serif);font-style:italic;font-size:28px;color:var(--gold);margin-bottom:8px;}
+.feature-title{font-family:var(--ff-serif);font-size:16px;color:var(--charcoal);margin-bottom:8px;}
+.feature-desc{font-size:13px;line-height:1.65;color:var(--char-m);font-weight:300;}
+.feature-tag{margin-top:10px;font-size:9px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold-d);}
+
+/* ── Data table ── */
+.data-table-wrap{margin:32px 0;overflow-x:auto;}
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table thead tr{border-bottom:var(--rule) solid var(--charcoal);}
+.data-table thead th{font-size:9px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--char-l);padding:0 16px 12px 0;text-align:left;}
+.data-table tbody tr{border-bottom:0.5px solid var(--ivory-d);}
+.data-table tbody td{padding:11px 16px 11px 0;color:var(--char-m);font-weight:300;line-height:1.4;vertical-align:top;}
+.data-table tbody td:first-child{font-weight:500;color:var(--charcoal);font-size:14px;}
+.tag{display:inline-block;padding:2px 7px;font-size:9px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;}
+.tag-crude{background:var(--charcoal);color:var(--ivory);}
+.tag-container{background:var(--ivory-d);color:var(--char-m);border:0.5px solid var(--ivory-d);}
+.tag-bulk{border:0.5px solid var(--gold);color:var(--gold-d);}
+.tag-agri{border:0.5px solid var(--char-l);color:var(--char-l);}
+
+/* ── Equation block ── */
+.equation-block{background:var(--ivory-d);border-left:var(--rule) solid var(--charcoal);padding:20px 24px;margin:28px 0;font-family:var(--ff-mono);font-size:13px;color:var(--charcoal);line-height:1.8;}
+.equation-label{font-family:var(--ff-body);font-size:10px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--char-l);margin-bottom:10px;}
+.equation-note{font-family:var(--ff-body);font-size:12px;color:var(--char-m);font-weight:300;margin-top:10px;}
+
+/* ── Validation block ── */
+.validation-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin:32px 0;}
+.validation-card{padding:20px;border:0.5px solid var(--ivory-d);}
+.validation-source{font-size:10px;font-weight:500;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold-d);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.validation-source::before{content:'';display:block;width:14px;height:1.5px;background:var(--gold);}
+.validation-title{font-family:var(--ff-serif);font-size:16px;color:var(--charcoal);margin-bottom:8px;}
+.validation-desc{font-size:13px;line-height:1.65;color:var(--char-m);font-weight:300;}
+
+/* ── Pipeline diagram ── */
+.pipeline{display:flex;align-items:stretch;gap:0;border-top:var(--rule) solid var(--charcoal);border-bottom:var(--rule) solid var(--charcoal);margin:32px 0;}
+.pipeline-step{flex:1;padding:20px 16px;border-right:0.5px solid var(--ivory-d);position:relative;}
+.pipeline-step:last-child{border-right:none;}
+.pipeline-num{font-family:var(--ff-serif);font-style:italic;font-size:24px;color:var(--gold);margin-bottom:6px;}
+.pipeline-title{font-size:11px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--charcoal);margin-bottom:8px;}
+.pipeline-desc{font-size:12px;line-height:1.6;color:var(--char-m);font-weight:300;}
+
+/* ── Limitations ── */
+.limitation-list{margin:24px 0;}
+.limitation-item{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:14px 0;border-bottom:0.5px solid var(--ivory-d);align-items:baseline;}
+.limitation-bullet{width:6px;height:6px;background:var(--gold);margin-top:6px;}
+.limitation-text{font-size:14px;line-height:1.7;color:var(--char-m);font-weight:300;}
+.limitation-text strong{font-weight:500;color:var(--charcoal);}
+
+/* ── Footer ── */
+footer{background:var(--charcoal);border-top:var(--rule) solid var(--gold);padding:40px 32px 32px;display:flex;justify-content:space-between;align-items:flex-start;gap:48px;}
+.footer-brand{font-family:var(--ff-serif);font-size:18px;color:var(--ivory);margin-bottom:8px;display:flex;align-items:center;gap:12px;}
+.footer-brand img{height:24px;filter:brightness(0) invert(1);opacity:0.7;}
+.footer-sub{font-size:12px;font-weight:300;color:var(--char-l);line-height:1.6;max-width:260px;}
+.footer-right{font-size:11px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--char-l);text-align:right;}
+.footer-email{color:var(--gold);margin-top:8px;display:block;font-size:13px;letter-spacing:0.03em;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="data:image/jpeg;base64,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" alt="Last Larch">
+    Last Larch
+  </a>
+  <ul class="nav-links">
+    <li><a href="#">Research</a></li>
+    <li class="active"><a href="#">Methodology</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+</nav>
+
+<div class="project-header">
+  <div class="project-eyebrow">Technical Methodology</div>
+  <h1 class="project-title">Chokepoint Dependency Model</h1>
+  <p class="project-subtitle">How the model works: data sources, pipeline architecture, simulation logic, validation approach, and known limitations. Written for risk professionals who want to understand what is under the hood before a conversation.</p>
+  <div class="project-meta">
+    <div class="meta-item">
+      <span class="meta-label">Model version</span>
+      <span class="meta-value">0.1 (April 2026)</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Trade coverage</span>
+      <span class="meta-value">89.6% of 97B sample</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Chokepoints</span>
+      <span class="meta-value">22 across 4 categories</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Commodity classes</span>
+      <span class="meta-value">7 HS codes</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Contact</span>
+      <span class="meta-value">fysh@lastlarch.com</span>
+    </div>
+  </div>
+</div>
+
+<div class="project-content">
+
+  <!-- Pipeline overview -->
+  <section class="content-section" style="padding-top:56px;">
+    <h2 class="section-heading">Model pipeline</h2>
+    <div class="text-single">
+      <p>The model runs in four sequential stages. Each stage produces a discrete output that feeds the next. All stages are reproducible from publicly available data sources.</p>
+    </div>
+    <div class="pipeline">
+      <div class="pipeline-step">
+        <div class="pipeline-num">01</div>
+        <div class="pipeline-title">Data ingestion</div>
+        <div class="pipeline-desc">UN Comtrade bilateral trade flows by HS code. Port coordinates from NGA World Port Index. Chokepoint coordinates and parameters defined manually.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">02</div>
+        <div class="pipeline-title">Route inference</div>
+        <div class="pipeline-desc">Each (exporter, importer) pair is assigned to the best-matching maritime corridor using a 27-corridor lookup table. Unmatched flows are flagged separately.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">03</div>
+        <div class="pipeline-title">Dependency matrix</div>
+        <div class="pipeline-desc">231 country-chokepoint-commodity combinations produced. Each cell states the share of a country's seaborne imports of a given commodity that transits a given chokepoint.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">04</div>
+        <div class="pipeline-title">Simulation</div>
+        <div class="pipeline-desc">Given chokepoint, severity (0-100%), and duration (days), the model computes trade value at risk, voyages disrupted, and applicable relief mechanisms.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data sources -->
+  <section class="content-section">
+    <h2 class="section-heading">Data sources</h2>
+    <div class="specs-table">
+      <div class="spec-row">
+        <div class="spec-label">Trade flows</div>
+        <div class="spec-value"><strong>UN Comtrade</strong> (comtradeplus.un.org) &mdash; annual bilateral import data for 2022 by HS commodity code. The public preview API returns up to 500 records per call. Current model uses 3,500 raw rows across 7 commodity codes after rate-limited sequential download.</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Port coordinates</div>
+        <div class="spec-value"><strong>NGA World Port Index (Pub. 150)</strong> &mdash; 3,898 ports with latitude, longitude, country, and port type. Published by the US National Geospatial-Intelligence Agency. Public domain.</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Chokepoints</div>
+        <div class="spec-value"><strong>Manually defined</strong> &mdash; 22 chokepoints with coordinates, type classification, detour distance (km), and capacity sensitivity score. Detour distances sourced from published shipping literature and validated against voyage planning references.</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">AIS validation</div>
+        <div class="spec-value"><strong>IMF PortWatch</strong> (portwatch.imf.org) &mdash; aggregated vessel transit counts derived from AIS data, published weekly at ~1,000 major ports. Used to validate route inference outputs against observed traffic distributions. EIA weekly tanker flow data used for energy-specific corridor validation.</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Commodity prices</div>
+        <div class="spec-value"><strong>IEA/EIA reference prices</strong> &mdash; cargo value per voyage estimated from typical vessel class cargo volumes at 2022 average commodity prices. VLCC: 60M, Suezmax: 0M, Aframax: 6M, Capesize: 0M, Panamax/Container: 0-80M.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Commodity classes -->
+  <section class="content-section">
+    <h2 class="section-heading">Commodity classes</h2>
+    <div class="text-single">
+      <p>The model currently covers seven HS commodity classes. Each class has its own vessel type assignment, cargo value per voyage estimate, and corridor mapping. Additional commodity classes can be added by downloading the relevant Comtrade data and running the pipeline.</p>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>HS code</th>
+            <th>Commodity</th>
+            <th>Type</th>
+            <th>Vessel class</th>
+            <th>Sample trade value (2022)</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2709</td>
+            <td>Crude petroleum oils</td>
+            <td><span class="tag tag-crude">Energy</span></td>
+            <td>VLCC / Suezmax</td>
+            <td>90B</td>
+            <td>Primary energy security indicator. Gulf exporters dominate.</td>
+          </tr>
+          <tr>
+            <td>2710</td>
+            <td>Refined petroleum products</td>
+            <td><span class="tag tag-crude">Energy</span></td>
+            <td>Aframax</td>
+            <td>40B</td>
+            <td>Different route profile from crude; Asian refinery dominance.</td>
+          </tr>
+          <tr>
+            <td>2601</td>
+            <td>Iron ores and concentrates</td>
+            <td><span class="tag tag-bulk">Bulk</span></td>
+            <td>Capesize</td>
+            <td>31B</td>
+            <td>Australia-to-China corridor dominant. Malacca critical.</td>
+          </tr>
+          <tr>
+            <td>8703</td>
+            <td>Passenger motor vehicles</td>
+            <td><span class="tag tag-container">Container / RoRo</span></td>
+            <td>RoRo / Panamax</td>
+            <td>13B</td>
+            <td>Japan/Korea to Europe and Americas. Suez and Panama exposure.</td>
+          </tr>
+          <tr>
+            <td>8471</td>
+            <td>Computers and data processing equipment</td>
+            <td><span class="tag tag-container">Container</span></td>
+            <td>Container</td>
+            <td>5B</td>
+            <td>Asia-Pacific to Europe/Americas. Malacca and Suez dominant.</td>
+          </tr>
+          <tr>
+            <td>6109</td>
+            <td>T-shirts and apparel (cotton)</td>
+            <td><span class="tag tag-container">Container</span></td>
+            <td>Container</td>
+            <td>B</td>
+            <td>Bangladesh/Vietnam to Europe. Suez and Malacca exposure.</td>
+          </tr>
+          <tr>
+            <td>1001</td>
+            <td>Wheat and meslin</td>
+            <td><span class="tag tag-agri">Agricultural</span></td>
+            <td>Handymax</td>
+            <td>8B</td>
+            <td>Black Sea/US Gulf to MENA and Asia. Bosporus relevant for Black Sea origination.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:13px;color:var(--char-l);margin-top:16px;">Candidate additions for future versions: LNG (HS 2711), fertilizers (HS 3102-3105), semiconductor components (HS 8542), and pharmaceutical products (HS 3004). Each adds distinct chokepoint exposure profiles and geopolitical relevance.</p>
+  </section>
+
+  <!-- Route inference -->
+  <section class="content-section">
+    <h2 class="section-heading">Route inference</h2>
+    <div class="text-single">
+      <p>UN Comtrade reports annual bilateral trade values by commodity. It does not record the maritime route taken. The route inference stage assigns each (exporter country ISO, importer country ISO) pair to one of 27 pre-defined maritime corridors using a lookup table.</p>
+      <p>Each corridor definition specifies: the list of exporter ISO codes it covers, the list of importer ISO codes, the vessel type, the approximate distance in kilometres, and the ordered list of chokepoints transited. Route assignment uses the first matching corridor. Flows with no matching corridor are flagged as unmatched and excluded from the dependency matrix.</p>
+    </div>
+
+    <blockquote class="pullquote">Route inference assumes ships take the shortest realistic path under normal operating conditions. The uncertainty lives here, and it is explicitly documented.</blockquote>
+
+    <div class="text-single">
+      <p>Current model performance: 899 of 3,294 clean trade flow rows are matched to corridors (27.3% of rows), capturing 04B of 97B total trade value (89.6% value coverage). The gap between row coverage and value coverage reflects the concentration of large-value flows in well-defined corridors: crude oil between Gulf exporters and major importers is both high-value and geographically predictable.</p>
+      <p>The 2,395 unmatched rows are predominantly small bilateral flows in commodity classes where trade routes are more diffuse, or flows between country pairs not yet in the corridor definitions. Adding corridors iteratively closes this gap.</p>
+    </div>
+
+    <div class="specs-table" style="margin-top:28px;">
+      <div class="spec-row">
+        <div class="spec-label">Corridors defined</div>
+        <div class="spec-value">27 (9 original energy-focused + 18 added for non-energy commodities)</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Flow rows matched</div>
+        <div class="spec-value">899 / 3,294 (27.3%)</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Trade value covered</div>
+        <div class="spec-value">04B / 97B (89.6%)</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Key assumption</div>
+        <div class="spec-value">Shortest realistic route under normal conditions. Does not model historical routing deviations or carrier-specific preferences.</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Rerouting logic</div>
+        <div class="spec-value">Each corridor has a <code>detour_km</code> field specifying the additional distance if the primary chokepoint is blocked. Zero detour = no alternative (Hormuz, Bosporus). Positive detour = Cape route or equivalent available.</div>
+      </div>
+      <div class="spec-row">
+        <div class="spec-label">Supplier substitution</div>
+        <div class="spec-value">Corridors flagged with <code>supplier_substitution: true</code> (e.g. GULF_TO_USA, GULF_TO_BRAZIL) indicate that the importing country can switch to alternative supply sources rather than rerouting the same vessel. Substitution lag of 30-45 days is assigned based on contract and infrastructure flexibility.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Simulation logic -->
+  <section class="content-section">
+    <h2 class="section-heading">Simulation logic</h2>
+    <div class="text-single">
+      <p>The simulation takes three inputs: a chokepoint identifier, a severity percentage (0-100%), and a duration in days. It queries the dependency matrix and returns trade value at risk and voyages disrupted by country and commodity.</p>
+    </div>
+
+    <div class="equation-block">
+      <div class="equation-label">Core calculation</div>
+      effective_severity = severity_pct / 100 * capacity_sensitivity<br>
+      value_at_risk = exposed_value_usd * effective_severity * (duration_days / 365)<br>
+      voyages_disrupted = total_voyages * effective_severity * (duration_days / 365)
+      <div class="equation-note">Where exposed_value_usd is the annual trade value of the country-chokepoint-commodity row in the dependency matrix, and capacity_sensitivity is a 0-1 score specific to each chokepoint reflecting how quickly partial disruption becomes effective closure.</div>
+    </div>
+
+    <div class="text-single">
+      <p>Capacity sensitivity reflects the physical and commercial characteristics of each chokepoint. Hormuz and Bosporus score 1.0 because any disruption is immediately total: there is no alternative route and insurers withdraw coverage rapidly. Nodal hubs like Singapore score 0.6 because they degrade gradually before becoming critical, and cargo can partially reroute to secondary ports.</p>
+    </div>
+
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Chokepoint</th>
+            <th>Type</th>
+            <th>Capacity sensitivity</th>
+            <th>Detour (km)</th>
+            <th>Rationale</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Strait of Hormuz</td><td>Geometric</td><td>1.00</td><td>0</td><td>No alternative route for Gulf oil. Any closure is total.</td></tr>
+          <tr><td>Bosporus Strait</td><td>Geometric</td><td>1.00</td><td>0</td><td>Only Black Sea exit. No maritime alternative exists.</td></tr>
+          <tr><td>Suez Canal</td><td>Geometric</td><td>0.95</td><td>9,000</td><td>Cape route viable but costly. Near-total rerouting observed in 2024.</td></tr>
+          <tr><td>Bab-el-Mandeb</td><td>Geometric</td><td>0.95</td><td>9,000</td><td>Pairs with Suez. Insurance withdrawal = corridor closure in practice.</td></tr>
+          <tr><td>Strait of Malacca</td><td>Geometric</td><td>0.85</td><td>1,500</td><td>Sunda Strait alternative exists but is shallow and limited capacity.</td></tr>
+          <tr><td>Panama Canal</td><td>Geometric / Infra</td><td>0.90</td><td>22,000</td><td>Closure adds Cape Horn route. Drought-driven capacity restrictions well documented.</td></tr>
+          <tr><td>Port of Singapore</td><td>Nodal</td><td>0.60</td><td>0</td><td>Cascading impact but gradual degradation. Secondary hubs absorb partial volume.</td></tr>
+          <tr><td>Red Sea corridor</td><td>Corridor</td><td>0.90</td><td>9,000</td><td>Insurance withdrawal can effectively close zone without physical blockage.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Validation -->
+  <section class="content-section">
+    <h2 class="section-heading">Validation approach</h2>
+    <div class="text-single">
+      <p>The model's route inference outputs are validated against three independent aggregated AIS-derived datasets. Validation checks whether the model's predicted share of trade transiting each chokepoint is directionally consistent with observed vessel traffic distributions. It does not attempt to match the model to individual voyage records.</p>
+    </div>
+
+    <div class="validation-grid">
+      <div class="validation-card">
+        <div class="validation-source">IMF PortWatch</div>
+        <div class="validation-title">Port call and transit counts</div>
+        <div class="validation-desc">Weekly vessel call counts at approximately 1,000 major ports and chokepoint transit volumes, derived from AIS. Published freely via API. Validates total traffic distribution across chokepoints.</div>
+      </div>
+      <div class="validation-card">
+        <div class="validation-source">EIA tanker flow data</div>
+        <div class="validation-title">Energy-specific corridor flows</div>
+        <div class="validation-desc">Weekly and monthly aggregated tanker flow data published by the US Energy Information Administration, covering Hormuz, Bab-el-Mandeb, Suez, and Malacca. Directly validates energy commodity corridor assignments.</div>
+      </div>
+      <div class="validation-card">
+        <div class="validation-source">UNCTAD shipping statistics</div>
+        <div class="validation-title">Annual chokepoint volumes</div>
+        <div class="validation-desc">UNCTAD publishes annual statistics on container flows and bulk cargo through major chokepoints, derived from AIS aggregation. Used for annual cross-check of overall chokepoint share estimates.</div>
+      </div>
+      <div class="validation-card">
+        <div class="validation-source">Delta check routine</div>
+        <div class="validation-title">Automated divergence flagging</div>
+        <div class="validation-desc">A comparison routine computes the difference between model-inferred chokepoint shares and observed benchmark shares. Flows diverging by more than a configurable threshold (default 15%) are flagged for review. This is a planned addition to the pipeline, not yet implemented.</div>
+      </div>
+    </div>
+
+    <div class="text-single" style="margin-top:28px;">
+      <p>The validation approach is deliberately described as directional rather than exact. The model uses 2022 annual trade data; AIS aggregates reflect current and near-current vessel patterns. Trade patterns shift over time. The validation layer demonstrates that the route inference logic is grounded in observed reality, not that it replicates AIS records.</p>
+    </div>
+  </section>
+
+  <!-- Capabilities summary -->
+  <section class="content-section">
+    <h2 class="section-heading">Current capabilities</h2>
+    <div class="features-list">
+      <div class="feature-item">
+        <div class="feature-num">01</div>
+        <div class="feature-title">Single chokepoint simulation</div>
+        <div class="feature-desc">Query any of 22 chokepoints at variable severity and duration. Returns country-level and commodity-level trade value at risk with rerouting and substitution flags.</div>
+        <div class="feature-tag">API endpoint: /impact</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">02</div>
+        <div class="feature-title">Multi-chokepoint scenario</div>
+        <div class="feature-desc">Simulate simultaneous disruptions at multiple chokepoints. Aggregates impact by country across all affected corridors, removing double-counting.</div>
+        <div class="feature-tag">API endpoint: /scenario</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">03</div>
+        <div class="feature-title">Dependency matrix query</div>
+        <div class="feature-desc">Retrieve raw dependency scores for any country, chokepoint, or commodity combination. The core analytical output for portfolio accumulation analysis.</div>
+        <div class="feature-tag">API endpoint: /dependency</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">04</div>
+        <div class="feature-title">Commodity filtering</div>
+        <div class="feature-desc">All simulations can be filtered to a single HS commodity class. Allows cargo-specific analysis: a crude oil underwriter and a container goods underwriter see different exposure profiles.</div>
+        <div class="feature-tag">Parameter: commodity_code</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">05</div>
+        <div class="feature-title">Rerouting vs interruption distinction</div>
+        <div class="feature-desc">Each result row is flagged: reroute possible (with detour days), supplier substitution possible (with lag days), or no alternative. This distinction drives policy wording and loss quantification implications.</div>
+        <div class="feature-tag">Fields: reroute_possible, supplier_substitution</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">06</div>
+        <div class="feature-title">Voyage-level decomposition</div>
+        <div class="feature-desc">Annual trade values are decomposed into estimated voyage counts using vessel class cargo values. Enables underwriters to think in terms of individual policy exposures, not just aggregate trade statistics.</div>
+        <div class="feature-tag">Field: estimated_voyages_per_year</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Limitations -->
+  <section class="content-section">
+    <h2 class="section-heading">Known limitations and scope boundaries</h2>
+    <div class="text-single">
+      <p>These limitations are stated explicitly because the model is intended to support serious risk analysis. A buyer who understands where the model is uncertain is better positioned to use it appropriately than one who is not.</p>
+    </div>
+    <div class="limitation-list">
+      <div class="limitation-item">
+        <div class="limitation-bullet"></div>
+        <div class="limitation-text"><strong>2022 base year.</strong> Trade flow data is from UN Comtrade 2022. Patterns have shifted since, particularly in energy flows following the 2022-2024 Russian sanctions and the 2023-2025 Red Sea disruption. The model measures structural exposure under 2022 patterns, not current live flows. This is explicitly the "structural exposure under current trade patterns" framing described in the briefing note.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="limitation-bullet"></div>
+        <div class="limitation-text"><strong>500-row API limit.</strong> The UN Comtrade public preview API returns a maximum of 500 records per call. The model uses the top 500 flows by trade value for each commodity code. Smaller bilateral flows are systematically underrepresented. This is why value coverage (89.6%) substantially exceeds row coverage (27.3%).</div>
+      </div>
+      <div class="limitation-item">
+        <div class="limitation-bullet"></div>
+        <div class="limitation-text"><strong>Annual, not periodic.</strong> The model does not capture seasonal patterns in commodity flows, monthly variation in vessel traffic, or the timing distribution of voyages within a year. Duration-based calculations use a simple linear scaling (duration_days / 365) rather than seasonal adjustment.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="limitation-bullet"></div>
+        <div class="limitation-text"><strong>Country-level, not vessel-level.</strong> The voyage decomposition produces estimated voyage counts from annual trade values divided by typical cargo values. It does not track individual vessels, flag states, or policy-specific cargo. Portfolio-level accumulation analysis requires mapping individual policies to corridor assignments, which is a data integration step the model does not perform.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="limitation-bullet"></div>
+        <div class="limitation-text"><strong>Capacity sensitivity scores are calibrated, not measured.</strong> The 0-1 capacity sensitivity scores for each chokepoint are informed judgements calibrated against historical disruption events. They are defensible parameters, not statistical estimates. They can and should be adjusted in a commercial deployment to reflect a buyer's own view of chokepoint risk profiles.</div>
+      </div>
+      <div class="limitation-item">
+        <div class="limitation-bullet"></div>
+        <div class="limitation-text"><strong>Land-based and pipeline flows excluded.</strong> Comtrade does not distinguish mode of transport. Some bilateral flows in the dataset are primarily overland, pipeline, or short-sea routes that are not meaningfully exposed to open-ocean chokepoints. These are excluded where corridor assignment is ambiguous, but the exclusion is not exhaustive.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="rule-gold"></div>
+
+  <!-- Contact -->
+  <section class="content-section" style="border-top:none;padding-top:0;">
+    <h2 class="section-heading">Further information</h2>
+    <div class="text-single">
+      <p>Full model documentation, including corridor definitions, the complete dependency matrix, and the simulation API specification, is available on request under NDA for serious counterparties. The model is under active development; the limitations described above are on the near-term improvement roadmap.</p>
+      <p>For a demonstration using your own portfolio exposure parameters, or to discuss how the model might be adapted for a specific underwriting or risk management use case, contact:</p>
+    </div>
+    <div style="margin-top:24px;padding:24px 28px;border-left:var(--rule) solid var(--gold);background:var(--ivory-d);display:inline-block;">
+      <div style="font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-d);margin-bottom:8px;">Direct contact</div>
+      <div style="font-family:var(--ff-serif);font-size:22px;color:var(--charcoal);">fysh@lastlarch.com</div>
+      <div style="font-size:13px;color:var(--char-l);margin-top:6px;font-weight:300;">Last Larch &nbsp;&middot;&nbsp; Geneva &nbsp;&middot;&nbsp; Risk Intelligence</div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div>
+    <div class="footer-brand">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCANnAkEDASIAAhEBAxEB/8QAHQABAAEEAwEAAAAAAAAAAAAAAAYBBQcIAgQJA//EAFEQAQABAgQBBgcLCQYEBgMBAAABAgMEBQYRMQcSIUFysggVUWFxlNETFiIyQkNUVYGCkxQjM0RzkZKhsSQ0NUVis1KDweEXNlNWY4QlwtLw/8QAGwEBAAIDAQEAAAAAAAAAAAAAAAECBQYHBAP/xAA4EQEAAgECAgYFDAIDAQAAAAAAAQIDBAURMQYSEyFBcRQigbHBFRYzNFFSYXKR0eHwQlMyQ6Hx/9oADAMBAAIRAxEAPwDTzB4eb1NdUT8WIn+cR/1drO8uowtVu7h66q7NyiKomeqeuJ88T0OWRxvbv9mO/Su12zF7D3cDNMc67VFVqZ6qo4x9sf0hAiY+2Ks1WbtVFUbTE7S+KQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABeMgj81iOxHfpXq7RM7VUztVTO8THGJWXT/6LEdiO/Sv+ytloctV5RbxeSYfPMJEzNfOpxVMfN3I4/ZO8THmlBmTtN4q1ROKyrFc38lzK37jNVXC3c+RX++dp80z5EE1JlOIybNb2BxFMxXanaejZMTxRMLYAlAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC9aej8xiZ/0U9+lf4hYtOR/ZcVP+mn/AHKV9jgpZaCYiY2ldtUYS1qLSFOcU1TXmmErpsYumeNVO3wLn2xExPnpnyrUuel8ytZXm9F7FW/dcFdpmzire2+9urjMeeJ2qjzwiJ4EsZ1xNNU0z1Tsok3KBkF3JM4ro+Nau73LVcR0VUT0xMebaYRl9FQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEg03H9hxc/6af9yheY4LNpqf7BjI/00/7lC9QpZaABVKS14ezqrQmJwt6rfM8lszOH3npuYeZ/nzZ2j0TT5GJMRaqs3qrdUbTTO0siZBmd3J85w2Y2qIue41712qp6LtE9FVE+aYmY+10uVnJLWGzPxzl9NU5bmG13DVbbRzZjh6Y6YmPLEr1lWYQQBZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC+6cn+yYqP8ATT/uUr7Cwadn8xiY/wBFPfpX+FLLQAKpEjyWmrUmnruk79VM12Ofi8BzvLETNy3Hpj4UR5qvKjj6YXEX8JibWKw1ybd61XFduqOqYneExPAlBsVaqs367dUbTTMw+TIXKdk9rE2cLqTK7Exg8Va3uxTwtXYnauj7J/fG09bHr6KAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALzp79FiexHfpSGEd0/8TEdiO/SkMcFLLQqAqkABItJYj8tweL0liK6YsZpMe4TXwt4iOin+KPg+nm+RjLP8BcyzNsTgrsbVWrk0ylcTMTFVMzTVE7xMTtMS++vMFbzbJcNqKxVNeMuXJt4+n/huRHxvRVG0+neOpesqyx8AsgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABd9P/Ev9iO/SkUcEe0/8TEdiO/SkMcFLLQqAqkAAXXS+MwmGx1zD5jRTVgcbb9wvTVwtzPxbn3Z/lNS1KTG8dKRHtW5Hichze5gMTTMV0ebZZ2VdQ4e1qXQ9WYVVc7NcrijD3Y67ln5Ffn26aZ9ET1sWV0zTXNM8YnZ9FHEAAAAAAAAAAAAAFYpmeEOXudf/DV+5dshwkYq5Rb23mZhljSnJjXnFc2qLVU1R0x54fO+StJiLTzWiszEzDB8xMTtMbKJFyi5JXp/VWKyyumaZtTwn7UdfRUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABeNPfo8R2I79KQxwR/T36LE9iO/SkEcFLLQqAqkAAABcdN5lTlWcWcVete7Yad7eJtf+pan40enrjzxCNcoGS1ZXnV25bpmcLiKpuYeuI6K6J6aZjzbLovcWa9T6Wrym5zasTlNqu9hpnjVamfhU+fmzO/onyQtWUSxUOd2iq3XNFUbTDguqAAAAAAAAAAAAmfJnh4xOc2bc7fGp/q3T5Pcooy6beJptxNVFW+3l6emGmHJFciNT2KZ/46f6t8MhtxTg6ZiOPtah0wz3w6fHak8J6zKbVSL3tE/Y1l8LrRNeGzy9qjDRvhsXVHNiI4dP/drnMbTtL0J5WNPUam0leyuujnTRFV61O3CYjeY/k0F1Bgq8BmuJw9dO3Mu1U/ulnNo3Cu4aWuaOfKfwnx/d49VgnBlmi3gMm84AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC86e/RYnsR36Ugjgj+nv0WJ7Ed+lII4KWWhUBVIAAAA7GW4y/l+Ps43DzHulmrnRE8Ko4TTPmmN4nzS64CnKlk9m3jaM6yy1VGW4y3TctTt0UzPGmfPE7xPnhBmW9PUV5/k1/R1yqne7XOJwU19VyI3qo+9Ebx5487FmYYavCYy9h7kbVW66qZ+ydn0ieKkuuAkAAAAAAAAAATHkm6dV4eP9dP9W/uURtgrfoaCckEb6tw/bp/q39yuNsHb9DSum31bH+b4Mvs/wBJbyfTGW/dcPXTHRVzZ2nyS098JfRs5dnVGYYSxMWrtM13ObHRTV1w3IQXlW0vZz7T2Lw/ucVXb1PNomY4VbdHsa/0V3T0TVdlefVv3eU+E/B7tz03a4+tHOGgExtPSovOr8nvZJnmIwF+jm1WqtphZnVWtAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALzp79FiexHfpSCOCP6e/RYnsR36UhhSy0ACqQAAAAAHOxeu4e/bxGHuVW71qqK7ddPGmqJ3iY+1y5Ssvw+MwmB1Bl8bxiqKpxdEfNXomOdT6OnePNMPkuunrti5Ti8mxdNM2cxo9zt1VcLV75FXon4s+mJ6lqyiYYwHfz/Lr2VZpewN+nau1VtPQ6C6oAAAAAAAAACacj87atw/bp/q38yz+52/Q0B5I/8AzZh+3T/Vv7lX9yt+hpPTb6tj/N8GX2f6S3k7b5Ym1TetTRVG8S+o5vE8O9sLUbwm9I1WMTVnNuieddubXIiOvy/a1/qiYmYlv/yraasZ5k9ym9biummid/N5JaN6zyW/kmc3sLeomnaqrbo26N3Yuj+5xr9JE2n1q90/v7Wp67T9hlmI5TyWMBnHjAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXnT36LE9iO/SkEcEf09+jxHYjv0pBHBSy0KgKpAAAAAAFJjeOlUB2NbYS3nOnreoaa5qzCi5TYxtPXMxHwa/vRH74qY+mNp2ZIyDGYbCZhtj7fumBv0zaxFM9O0Twrjz0ztP7460K1Llt3LM0u2LlE0xzpmneNt436Jh9InirK1gJQAAAAAAAAmXJH/5sw/bp/q39yr+5W/Q0C5I//NmH7dH9W/uVf3K36GldNvq2P83wZfZ/pLeTtgObNhfPEWqb1qq3XETExtO7WXwndETct3c5w9nb8mt7TzY2iY6pbPI3ygZJRnWRXsJVRFUV9FUT1xt0s50f3OdBq4tM+rPdP7+x4tdp+3xTEc45POuumaappnjDilHKRkdeSamxmHiiYtRc2onbaJjZF3YYmJjjDVABIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvGnv0eI7Ed+lIY4I9p/4mI7Ed+lIY4KWWhUBVIAAAAAAACkxvGz759Yu59p2b1UUziMosc2Z32muzv8GfPzfi+jmvi+uCxFWFxVF6I51HTTdo/46J6Kqf3fz2TE8ESgMxtO0qL9rXK4wGb3bmHiasHdmK7FzbaKqZpiYlYX0VAAAAAAAATDkmnbVeH7dH9W/wBlH9xt+h5/clc7apw/7Sj+r0Ayb+4Wuy0rpt9Wx/m+DL7P9Jbyd0BzZsI410xVTtLkA1v8I/QdWJwsYrB2edXRvdqmI26Ondqxdom3cmmeMTs9HtWZXRmeU37PNia5omKZlo7yyaSu6b1FXboombNUc6JiOiOng6p0V3T0vTdjefWp/wCx/HJrO5abssnXjlKAANqY0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABd9P/Ev9iO/SkUcEd0/8S/2I79KRRwUstCoCqQAAAAAAAAAFwtYK7qHI6skoimcRg+ficPMztNVG0zXRHo+N/F5GN7lE0VzTPGJTzDYi/hMTbxWGr5l61VFVM/8ASfNPBbNfZVYsX8PmOXzVXhMVZi5vPyKt9qqJ88TvC9ZVmEUAWQAAAAAAlXJhO2qMN+0o/q9Ask/w+12Xn5yZ9Gp8N+0o/q9Asi/w612WldNvq2P83wZfZ/pLeTvgObNhAAUmN42lhLwjNIWswyPE4q3a3vVTvRO3CWbls1Hl1rMcurs3KYq6JmN/KyO06+2h1Vc0e3yefVYIzY5rLzfx1ivDYu5YrjaqiraXwZH5a9LXsnz27iYtzFF+7M7bdESxw7VjyVy0i9Z4xLULVmszEgC6AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF30/8AEv8AYjv0pFHBHdP/ABL/AGI79KRRwUstCoCqQAAAAAAAAABcsnsW80wuJ09cinn4yedhK6vk3o+T96Oj0xHlW1Wmqqium5bqmiuiYqpqpnaaZjhMJieBKHZpg7uAx17C3o2rt1zTLqsi8oeX2MzybB6lwk86/iKqqMbbiNvc7sR0/ZPRVHp8zHT6KAAAAAAJPybdGpsN+0o/q9A8gnfLbXZeffJxO2pcN+0o/q9AtPf4ba7LSum31bH+b4Mvs/0lvJcgHNmwgACkxvGyoDEHLvoqznOV3cV7lEzbt9E7cJ6paYZtgb2AxlWHvUzTVTxiYekmaYS3jMHcsXKYqprjaYlqB4RmjqsFmuIzOzZ5tETFE7R0ceiXRuiG69pSdJknvjvjy8Y+LAbrpurPa19rBwrVG0zHkUbwwwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC76f+Jf7Ed+lIo4I7p/4t/sR36UijgpZaFQFUgAAAAAAAAAAALtpjF4S1iL+AzCiKsHjrfuVU1cLVz5Ff2TO0+aqUB1DleIyjMrmDxNE010cYmNknmImNpd/VmHnUOmfHVU87H4GLeGxHlrp+RX9sdEz5Y869ZRMMbitUTTVMT1KLKgAAAJHyeztqPDftaP6vQTTc75ZZ7Lz60BO2osN+1o7z0E0z/hdnstK6bfVsf5vgy+z/AElvJdAHNmwgAAADG/LXpqnOsgrppo53GavR/wD6GSHwxuHoxOHrtVxExVTMdL1aLVX0ueuanOHyzYoy0ms+Lzh1Nlt3LM2xGHuUTHNuTEdC1NifCK0HXYuzjMJZmYt0zVVMR1NeK6ZpqmJdq0eqpq8Fc1OUtQy4pxXmk+DiA9T5gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALvp/4t/sR36Uijgjun/i3+xHfpSKOClloVAVSAAAAAAAAAAAALjpzMLOXZtbu4u17tgrkTaxVv8A4rc8Z9MTtVHniFuAWbXWTXMpzq9TFM+4XK5rs1bdFVE9MTHljZHmUMfavan0r+R1RTVisls1V254VV2Jnh5+bM7eiY8jGFdM01TEvrCigAAAJBoOdtQ4X9rR3noLpid8qs9l566KnbUGF/a0d56D6UnfKbPYaX02+q4/zfBl9n+kt5LwA5q2EAAAAABFOUfI6M3yHEW4oiq5NO3phozyj5DXkWob+G5s8ynbadnofcoiuiaao3hrF4TGjNrNePw9reuu5zo9G/TDd+h+59nknS3nuty8/wCWG3XTdavax4NZByuUTRcqoqjaYnZxdHYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABdtP8L/Yjv0pHHBHNP8L/AGI79KRxwUstCoCqQAAAAAAAAAAAAAH3y7GXcBjbeLs9M0TtVTM9FdMxtVTPmmJmFo5Q8ps4PNPyvAc6vAYiim5Zr223ieqfPHCY8sLg7+HtTnGR3tPTETeiqcRhKp83TXR9sRzo9E+VasomGNh9MRbqs367VUbTTVMT9j5rqgALxo+ds+wv7WjvQ9CdIf4PY7EPPXSP+O4X9tR3oehOkP8AB7HYhpfTb6rj8/gy+z/SW8l6Ac1bCAAAAAAI1rzI7OcZRct124qqpomad/KkrjXTFdM0zHRMPphy2xXi9Z74VvWLRwl598qOmbuRZzXE0VRRcqqqjo4dPBC24fhC6Jt4/A4jH27W9UUfBmI4Vbf9momYYavCYuuxcjaqmdpdo2ncK6/TVyxz8fNqOqwTgyTV1wGSecAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABdtP8L/Yjv0pHHBHMg4X+xHfpSOOClloVAVSAAAAAAAAAAAAAAK2rt2xet4ixXNF21VFdFUdUxwUAdPX2V4eiMJm+Bqmu1jaKrlyn/wBK5E/Co+yeHm2lEWRsvnDXsHjcrxduKoxdufyeqfm723R/Fw9PN8iA5hhrmExdyxcpmmqidpiYfSJ4qy64CULzo6N8+wv7WjvQ9CdJxtlFjsQ8+dExvqDC/taO89CNLdGU2Ow0vpt9Vx/m+DL7P9JbyXYBzVsIAAAAAAAC26hy21mWX3MPdpiYq8rSXlw0veyvPsRjItTTbrubcOjdvXMbsR8u+jrecZVN6m1E82mZq6OE9Utp6Lbp6JqeyvPq29/hLGblpu1x9aOcNIpHdznBXMDjrli5TNM01THDzuk6q1oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABdsg+f7Ed+lI44I5kHz/AGI79KRxwUstCoCqQAAAAAAAAAAAAAAAFJjfbqmJ3iXW1lh5zHBxn8RHu1dcWsTEdVcR8bb/AFR0+nfyO07mS3cHbxs2cxoivA4in3O9v8ifk1/dmf3brVlEwxyLlqHLL+VZldw1+3VRMVTtE07dG62rqr7oaN9Q4X9rR3noTpmNsqsdh598n9PO1Hho/wDlo7z0H09G2V2Y/wBDSum31bH+b4Mvs/0lvJcQHNmwgAAAAAAADp5xg6MbgbtiumJiumY6XcJTWZrPGETHGODS/wAILRtzLs0uYqzanmW4nnTEfulhaY2naW/XK3pO3n2SXqabcTcqjad/I0i1tkl7JM8xOFrpmKaK9qZ26JjZ17o9uca7Sx1p9avdP7tV1+n7HJ3cpWEBn3iAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXbT/C/wBiO/SkccEc0/wv9iO/SkccFLLQqAqkAAAAAAAAAAAAAAAAUmN42VAXLUdj3yaSnH17TjsotU2bvlrtfIq8+23Nn0R5WOKrc09Ep3gcVVhMTFfTNm5E279EfLtzxj/rHniFv1vkM5XjJrtfnMNd2rs3Ij4NdMxvEx9j6RPFWXV5O9o1Nht//Uo/q9BMh/w2z2XntoSZp1Jhv2tHeeg+nJ3yqx2Gl9Nvq2P83wZbZ/pLeS5AObNhAAAAAAAAAAcL1um5bmmqImJax+Ehoje3TisLa3qpmblUxHyels+jHKFk1vM8jxEe5xVci3PN3ZrYdynQaut/8Z7p8nj1unjPimPF53XKZormmepxSnlHyC5kee3LE0zzdt4nbzos7HW0WiJjk1SY4TwkASgAAAAAAAAAAAAAAAAAAAAAAAAAAAAABdtP8L/Yjv0pHHBHMg+f7Ed+lI44KWWhUBVIAAAAAAAAAAAAAAAAABKYabwtOq9L4jT13arGZdRVicJM8a7Xy6PPzZnePNM9UIe7WT5hispzTD5lg6+bfw9cV078J8tM+aY3ifNMpieBLqcn2VV1a0s4aumYmm5TP82+WR2/c8Bbo8kbNbtG6cw2acpeGzjJ7dVeX4uxReonb4k7zzqZ89MxMT54bOWrfuNVduY25tUx/Np3Tb6tj8/gymz/AElvJ9AHNmwgAAAAAAAAADheoi5bmiY3iYcwGt3hI6Hpu4fEZlYtfDqnejo6PPDVrE2qrN6u3XG00ztL0b1blFnNsrrs3KIq6JmN/K0j5YtK3ckzq5fi3NNu9cmYjboh1HopunpODsLz61fd/DW9z03Z368cpY8AbaxYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC7ZB8/2I79KRxwRzIPn+xHfpSOOClloVAVSAAAAAAAAAAAAAAAAAAAAzv4HWo8BhtbVaVzaaYozD4WAuVfIvxHTR6Kojo89MR8pslmtEUZri6I6r9cfzl5+YHFYjA42xjcHersYnD3Kbtm7RO1VFdM701RPliYiW63JxrK3rrS9jP55lOLuVTRjbdPCi9Hxujqid4qjzTDTumlbTpccxHdFvgyu0zEZbR+CSAObtgAAAAAAAAAAAAUqjeJiWGeX/R1vNMru4um1vzLe8TtwqZnW/PcBbzHLruGuUxNNcbTu9+2a6+i1Nc1fD3PhqcMZsc1l5uY7D3MLiKrNynaqHwZc5ftH3sqzzEY21YmmzvFEzEdG+7EkxtO0u1YM1M+OuSk9097UL0mlprPOFAH1VAAAAAAAAAAAAAAAAAAAAAAAAAAAAXbIPn+xHfpSOOCOZB8/2I79KRxwUstCoCqQAAAAAAAAAAAAAAAAAAABkzweNZ+9jWVOAxl3m5Zms02bu89Fu5v8Cv8AfO0+ad+pjMebWaWmrwWw5OVo/s+x9MWScV4vXwegAx7yDaz992i7dGKu8/NMu2sYreemuNvgXPvRHT54qZCcW1Wmvpc1sOTnWeDbsWSMlIvXlIA+C4AAAAAAAAAAADHHLPpK3n+R10e5xPGqvfzdO7SHU+WXcqza/hrlE0825VEdHkl6P4yzTfw9duqImKqZj98NSvCU0XcwuOpxeFs7026ZqrqiOqXQOh+6ceOjyT+MfGGC3XTf9tfawAKzG07So35hAAAAAAAAAAAAAAAAAAAAAAAAAAAAF2yDhf7Ed+lI44I5kHz/AGI79KRxwUstCoCqQAAAAAAAAAAAAAAAAAAAAAEw5INX3NGa0w2Y11VfkN78xjaI67VU/G28tM7VR6NutubauW71qi7arprt10xVTVTO8VRPCYloE2e8GPWfjjTlemMdd52NyumJsTVPTcw++0fwz0eiaWk9L9s69I1lI747reXhPs/vJmNr1HVnsrePJmIBzxnQAAAAAAAAAAABDuU7TtrO8ixFHucVXKqeb09cJi43KIrpmmY3h9tNqL6fLXLSeEwpkpGSs1nxedvKHp+7kGf38JNPwKZ+DMR0SjLarwjdCflGErxuEtTVe5019EdXXDVm/bqtXq7dUbTTVMS7Xt+tprdPXNTx9/i1DPhnDkmkvmA9r4gAAAAAAAAAAAAAAAAAAAAAAAAALtkHz/Yjv0pHHBHMg+f7Ed+lI44KWWhUBVIAAAAAAAAAAAAAAAAAAAAAAvOiNQ4vSuqMDnmCmZrw1zeujfaLlE9FVE+mN4/mswpkx1y0ml44xPdK1bTWYmG+uT5jhM3yrC5ngLsXcLirVN21XHXTMb/ZPmdtr/4LGs/02i8fd/4r+XzVP23Lcd6PvNgHGd00FtBqrYbco5fjHh/ftbZps8Z8cXgAY99wAAAAAAAAAAAFn1VlVrM8su266Iqqiiebv5WkHLTpC5pzP55tMzavc65ExHDp4N9pjeJhhjwiNH2czyHF42m3veij83O3Cdv+uzcOiW6ej5/R7z6t+Xn/ACxO6abr07SvOPc0tHYzDDV4XF3LFyNqqJ2mHXdOa6AAAAAAAAAAAAAAAAAAAAAAAAAAu2QfP9iO/SkccEcyD5/sR36UjjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAO3k2Y4vKM1wuZ4C7NrFYW7TdtVx1VRO/2x5m7WhtRYTVelsDnmD2inEW/zlvfebdyOiqifRO/pjaeto0zB4Mus/EupatNY67zcDmlUe4zVPRbxHCP4o+D6Ypav0p2z0vTdtSPWp3+ceP7/AP1kdt1HZZOpPKfe2gAcubIAAAAAAAAAAAAOjnWBs5hgqsPeoiqmZ32l3hNbTWYmETHGOEtHeXvSF3Kc7vZjbtTTbv3fixHREsTy3x5Y9G4fUGU18+3FXNomYnbhV1S0k1RlGIyfNLuFv0TTVTVPRt53Zdj3KNw0sX/yjunz/lqes084Msx4eC0gMw8gAAAAAAAAAAAAAAAAAAAAAAAC7ZB8/wBiO/SkccEcyD5/sR36UjjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAADlauV2rtF21XVRcoqiqmqmdppmOEw4gN0OSDV9vWei8NmNdVP5dZ/MY2iOq7THxtvJVG1UenbqTBqDyDaz96OtLdGKu8zK8x2sYreeiid/gXPuzPT5plt85F0g2z0DVzFY9S3fHxj2e7g2nQ6jt8XfzjmAMG9gAAAAAAAAAAAD5YuzRfsV2q4iaao2mJa1eEtoOi5h72eYa3zarMcyuKY4+SWzSNa+ye3m2S3cNco59FcTFceZn+ju6ToNXHWn1Ld0/v7Hh1+m7bF3c45PO27RNu5VRPGJcEn5Rsku5LqXGWKqJpoi7MUdHRMIw6+1UAAAAAAAAAAAAAAAAAAAAAAABdsg+f7Ed+lI44I5kHz/Yjv0pHHBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAG2Xg76z98+jqcuxl3nZnlUU2bnOnpuWvkV+fojmz54362pqT8l+q72jtZYPOKJqnD873LF24+XZqmOdHpjoqjzxDC79tkbhpJpH/KO+PP7Pa9ei1HYZYmeU827I+WFv2cVhbWKw12m7ZvURct10zvFVMxvEx5ph9XIJjhPCW1AAAAAAAAAAAADheoi5RNMxvEw5gNcvCL0HOMwcYzCWd67ETXVMRxp6f6exqtft1Wrk0VRtMPR/VGW0Zhlt63NEVTVRzdp6464aR8t+kp07qW9Tao/MTG9MxHRxdX6L7p6ZpuyvPr07vOPCfg1jctN2WTrRyljgBs7HAAAAAAAAAAAAAAAAAAAAAALtp/hf7Ed+lI44I5p/hf7Ed+lI44KWWhUBVIAAAAAAAAAAAAAAAAAAAAAAAAAAADZTwXdZ+MMmu6Rx13fE4CmbmEmqemuzM9NP3Zn91UeRmxonpPPMbpvUWCzvAVbX8JdiuI32iuOFVM+aYmYn0t3NOZvg8/yLB5zl9fPw2LtRconrjfjTPnid4nzxLmHSvbPRdR29I9W/wD5Pj+vP9WxbbqO0x9Sece5cAGqsmAAAAAAAAAAAApVETG0sJeEXo6M0yC/dw9rnYiapqo6OrjMf9f3s3LbqDAW8dga7ddMTMRMxv5dmT2fcLaDVVyxy8fxh5tXgjPjmrzex2HrwuKuWLkbVUVTEw+DKnLppGvJ85qxdq3MW79dVW0Rw8zFc9DtGO9clYvWeMS1G1ZrPCQBdAAAAAAAAAAAAAAAAAAAAC76f+Lf7Ed+lIo4I5p/hf7Ed+lI44KWWhUBVIAAAAAAAAAAAAAAAAAAAAAAAAAAAAzp4LWs/wAlx97RuPu7WcTM3sDNU/FuRHw6PtiN488T5WC33y/GYnL8fh8dg7tVnE4e5TdtXKeNNVM7xP74eHctDTXaa2C3jy/CfCX30+acOSLw35Ee5OtT4bV+kcFneH5tNdynmYi3E/orsdFVP7+mPNMSkLjGXFfDecd44TE8JbZW0XrFo5SAPmsAAAAAAAAAAKVRExMSqAxNy3aPs5xlN+57nvVFHwJ24Vf92l2e5fdy7H3MNep5tVPGHo9muDt4zCV2blMTFUNSfCK0XXhcbezexamKaq4pqimOiJ34uk9EN07XHOkvPfXvjy+z2Ne3TTdW3axynmwOOVdM01TE9Ti3ViAAAAAAAAAAAAAAAAAAAAF2yDhf7Ed+lI44I5kHz/Yjv0pHHBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZW8G7Wfve1b4kxt3m5dm1UW4mqei3f4UVebf4s+mnyNqnn/TM0zFVMzEx0xMdTcXkQ1lGsdFWb2IuRVmeC2w+NiZ6aqoj4Nf3o6fTzvI5/wBL9r6to1mOOfdb4T8P0ZzatRxjsrexOwGjMyAAAAAAAAAAAAIPynacw+c5Tct3bcVUTTM1eaeqU4fDG2ab+Hrt1RExVTMPVotXfSZ65qc4l8s2KMtJrPi869bZNdyjOb+HuUTTEXKtujq3WBsj4R2jKufOOsWumzR8OYjjHVLXG7RNFc0zG0w7ZpNTTVYa5qcphp+XHOO81nwcAHoUAAAAAAAAAAAAAAAAAAXbIPn+xHfpSOOCOZB8/wBiO/SkccFLLQqAqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATfkV1jVo7W2HxN+5NOXYvbD42OqKJnor+7PT6N460IHx1OnpqcVsWSO60cF8d5x2i1ecN/6aoqpiqmYmmY3iYnolVifwbNZ++DSk5FjbvOzHKaYop509Nyxwon7vxZ+75WWHFtdpL6PPbBfnH9ifa23DljLSLx4gDyvqAAAAAAAAAAAAifKDkFrN8ovW5txVNdPNqjyw0j5UNNXch1BiLHM2txV8GYjomHoNdoiuiaZjeGv3hEaMpxmWTfsWt7tEzXvEfJ8jeuh+6dS86TJPdPfHn9ntYXddNxjta+HNqQPti7NVm/XbqjaYmYfF0RgQAAAAAAAAAAAAAAAAAF1yD5/sR36UkjgjeQfPdiO/SkkcFLLQqAqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIOTzU+J0hq3BZ5h+dVTar5t+3E/pbU9FVP7uHniJ6m7GW43DZjl+HzDBXab2GxNum7auU8Kqao3iWg7YjwWdZ+74W9ozH3fzlmKr+AmqeNG+9duPRM86PNNXkad0u2vtsMaqketXn5fx7uLLbXqepfs55T72eAHN2fAAAAAAAAAAAAFh1jllGPyu7E0RVVTRPN3X5xu0RXRNMxxh9MOW2LJF6z3wresXrMS0D5XdN3Mlz6vm0TFu5zq4nbzoG3E8IDRFvMMtxWLtWpm5FMzb6Ovbpj+TUXM8JcwmLuWbkbVUTtLtW16+uv01c1efj5tQ1OCcOSaS6oDIPgAAAAAAAAAAAAAAAAuuQfPdiO/SkkcEbyD57sR36UkjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADvaezbGZFneDzjAV8zE4S7Tdtz1TMdU+aY3iY8ky6IrasXrNbRxiUxMxPGG9ekc9wepdOYLPMBVvYxVqK+bvvNFXCqmfPExMfYurWnwXtZ+Lc7u6Tx13bC5hV7phJqnoovxHTT96I/fTHlbLOObxt07fqrYvDnHl/e5tekzxnxxbx8QBi3pAAAAAAAAAAAAW7PMvtZhg6rVymJ6+lp1y+6NqyvMqsxs29rd+5O9MR0Uy3VmN2MOWzTFrNslu1VW94ptzMTtwq6pbV0V3T0XU9jefVv3eU+H7MZuem7TH145w0WnonZR3M3wlzB425ZrpmJiqf6um6o1oAAAAAAAAAAAAAAABdcg+e7Ed+lJI4I5kHz/Yjv0pHHBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfTDX72GxNrE4e5VavWq4rt10ztNNUTvEx54lulyV6ts6y0bhM2iaYxUR7jjLcfIvUxHO+yeiqPNMNKWSvB61l719aUYHF3eblmaTTYvc6ei3c3/N1/vnafNVM9TXOku2em6Wb0j16d8fjHjH98Xv2/Udjl4TyltsA5S2YAAAAAAAAAAAAdHPMFRjsuvYeuImK6NneUmN42TW01njCJjjHBpXy/aMvZbm13GWbM+509FdUR0b+VhuqJiZiW/PKzpazneT3aJtxVz4mKvR5Wketslu5LneJwtdHNim5MR0Ow7Buca/SxMz61e6f39rVNdp+wycI5SsIDOPGAAAAAAAAAAAAAAu2QfP9iO/SkccEbyD57sR36UkjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANvOQPWfvt0XbtYu7z80y3m2MVvPTXG3wLn2xG0+emWRGl3JHq+5ozWmFzKqqr8iu/mMbRHyrVU9M7eWmdqo9G3W3Os3bd6zRes103LdymKqK6Z3iqJ6YmJ8jk/STa/QdVNqR6l++PjH98Gz7fqO2xcJ5w5gNee4AAAAAAAAAAAB8cVZpvWaqKoiYmJas+Elo2qiqjFYe1vVRvVXMR8npbWIhykZDazXJr+9uK64tzEeeGd6PbnOg1cTP/Ge6f7+Dxa/T9tinhzh561RNM7SolPKNp+5kOfXcLNPwYiJiYjoRZ2CJiY4w1QASAAAAAAAAAAAALrkHG/2I79KSRwRvION7sR36UkjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADZzwYtZ+N9PV6Xx13fG5ZTvh5qnprw++0R92Z29E0tY150TqHF6W1Rgc9wfTXhrm9dG+0XKJ6KqJ9MTMfzYretujcNJbF/lHfHn/ADyerSaicGWLeHi3nHTyXMsJnGU4XNMBdi7hcVapu2qvLExv0+SeqY8ruOOWrNZms84bVExMcYAEJAAAAAAAAAAHzv26btuaao3iX0Aaz+EhoqK7V/MbNufdJq3p9G/TH82sOIt1Wr1VFUbTE7PRTXGS2s3yqu3XRFU0xNUb+XZpDyr6au5LnVyuLc027tdVVPRw8zqvRbdPStN2N59anu/hrO5abssnWjlKCgNpY0AAAAAAAAAAABdcg43uxHfpSSOCN5BxvdiO/SkkcFLLQqAqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABn7wWNZ82q9ovH3eirnX8vmqevjctx3o+82CaE5RmGLyrNMLmeBuzaxWFu03bVcdVUTvH2eZu1oTUeE1ZpXA55hNqYv0fnbe+82rkdFVE+id/TG09bm3S3bOwzRqqR6t+fn/Pv4tg2vUdenZzzj3L4A09lQAAAAAAAAAAAHG5TFVE0z1wwV4QWiqcwwV3F27XxKJmmYjhVszutmo8tt5llt3D3KYmKoZLadfbQamuWvt8nn1WCM2Oay84Mfh68NiKrVcbTDrss8vOkrmVZxex1q1NNqqvmzER0RLE09E7O0Ystc1IyUnjE97UbVmszWQB9FQAAAAAAAAAF1yDjf7Ed+lJI4I3kHz3Yjv0pJHBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGXvBl1nOS6nq03jbu2BzWqItbz0W8Rwp/ij4Pp5rELlarrtXKbtuuqiuiYqpqpnaYmOExLya/R01untgvyn/AMnwl9cOWcN4vHg3+EN5HtYUaz0Xhsfcrp/L7H5jG0x1XIj423kqjaftmOpMnF9Rgvp8tsWSOExPCW20vGSsWrykAfFcAAAAAAAAAAUmN42VAYq5cNIUZ3k1cU24njVVO3CY4S0pzzAXcvzG9h7lM0zRcqjh5JekOZ4WjF4S5ZrpiYqpmOnztR/CI0PXgcbVjcPamaaKZm5MR5emJdF6Ibp16TpLz3x3x8YYDddNwntY9rA4rVE0ztKjeWGAAAAAAAAAAXXIPnuxHfpSSOCN5B892I79KSRwUstCoCqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGQOQjWfvQ1pajFXeZleYbYfF7z0UdPwLn3Zn901NwHn+2w8HTWfvl0fGV4y7zsyyqKbVfOnpuWvkV+fojmz6InraJ0w2zjEaykfhb4T8P0ZratR/1T7GUAGgs2AAAAAAAAAAAAIHyuaeozfTuJppt86uunmz6Nk8fLE2ab1qaKoiYnyvRpNTfS5q5ac4l88uOMlJrPi85NZZTcyfPsTg66dvc6tt9uhZWxXhEaArs3LmYYa3VVXVVzp7LXe5RNFc01RtMTs7ZotXTV4K5qcpafmxTivNJ8HEB6nzAAAAAAAAXXION/sR36UkjgjeQfPdiO/SkkcFLLQqAqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASbkw1Ve0drLB5zRzqrET7lirdPzlmr40emOiY88QjI+ebDTNjtjvHGJjhK1LTS0WjnDfvCYixi8JZxeGu03bF6im5buUzvFVMxvEx5ph9WEfBc1n+X5Td0hj7u+JwUTdwc1T012Zn4VP3Zn91XmZucX3HQ30Optgv4cvxjwltunzRmxxeAB4n2AAAAAAAAAAAAR3W+SWM2yq7TXaiuqmiebu0f5WNKXdOZ7XbmN7de9dMxHVMvQCumKqZpnrYH8IzRlOPyvE421b3u00zNvaP3w3TohunZZZ0t57rcvP8Alh9103Wr2lecNPx9sbYrw2Jrs1xtVTO0w+LpTXwAAAAAAAF1yD57sR36UkjgjeQfPdiO/SkkcFLLQqAqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABc9K53jdOahwWd5fVtiMJdiuI36Ko4VUz5pjeJ9LdzTWcYLUGQ4LOcvr5+GxdqLlHlp8tM+eJ3ifPDRBnLwWtZ/kmZXtHY67+ZxczewU1T8W7EfCo+9Ebx54nytT6V7Z6Tp/SKR61Of4x4/pz/AFZPbNR2eTqTyn3tjgHMmxAAAAAAAAAAAAC16jy21mWAqs3KYq643XRSY3jaVsd7Y7RavOEWrFo4S0X5ctJV5PnVzGW7U02r9yZiIjh5YYubw8uOjredZXXVFvfmUTVTO3Cr/u0szvAXcvx1eHu082qmXZ9n3Gu4aWuXx5T5tR1eCcGSa+Hg6IDKvMAAAAAAuuQfPdiO/SkkcEbyD57sR36UkjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD74DF4jAY6xjsHdqs4jD3Kbtq5TxpqpneJ/e+AiYiY4Snk3d5N9UYfWGkMFndjm03LlPMxNuPm7tPxqfR1x5phI2qfg4az97urvE2Nu83Ls2qptzNU9Fu9woq82/xZ9MT1NrHH9922dv1c0j/jPfHl9ns5Np0eo7fFE+McwBh3rAAAAAAAAAAAAdPNsJRjMFdsVxExXTs1C8IzSFeCza9mNizMW4+DXzY6N/K3Jlj7le0vbzzI7trmRPP352/wDKWy9GN09C1XUvPqW7p+EsduOm7bHxjnDQeqNpmJUXvWGT3snznEYW5RNPMuTTHQsjrLWAAAAAAF2yD5/sR36UjjgjmQfP9iO/SkccFLLQqAqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAiZiYmJmJjhMNw+Q7WUaw0VZuYm7zszwO2HxkTPTVMR8G596I39MVNPE25FtYTo3W2Hxd+5MZdiv7PjY6oomeiv7s7T6N462B6Q7Z6fpJ6sevXvj4x7ffwe3Q6jsMvfynm3KFKKqa6YroqiqmqN4mJ3iYVckbQAAAAAAAAAAAAPlirNN+zVbqiJiYmOl9QieA1Z8JDQ8xFOOwtneq3EzcmI6uqWttdM01bTD0S15kdvNsov25txVVVRzfTEtHeVPS1/Teor+Fqp/N07TTVEdExLrnRrdPTtLFbT69e6fhLVtw03Y5eMcpQ0BsTwAAAALtkHz/AGI79KRxwRzIOF/sR36UjjgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANpvBq1n4+0rOQY27zswymmKaJqnpuYfhTP3fiz5ub5WWmj3J/qbFaR1Zgs8w3OqizXtetxP6W1PRXT9scPJMRPU3YyvHYXM8uw2YYK7Tew2JtU3bVccKqao3iXLOlG1+h6rtaR6l+/ynxj4//Gybdqe1x9WecOyA1lkQAAAAAAAAAAAHGumK6ZpmN2DfCF0NTmmTXcThrXOxFNU1U7R8nfeY+xnRbs9wVGMwddNVMVTFNW2/oZbZdytt+qrk/wAeU+Ty6zTxnxzXx8Hm9j8PXhsVcs1xtNNUxLrsq8vWj68iz2b9qifccRNVyNo4b9TFTs1LResWrPGJalMTE8JAFkAALtp/hf7Ed+lI44I7p/4t/sR36UijgpZaFQFUgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADYbwWNZ+64e9ozH3fh2oqv4Cap408a7ceifhR6avI15d7T+a4zI87web5fc9zxWEuxdtz1bx1T5YmOiY8kyx27bfXX6W2GefOPwnw/v2PRps84MkXb5C06Pz7B6m01gc8wM/mcVbiqad95oq4VUT54mJj7F2cZyUtjtNLRwmO6W2VtFo4wAKpAAAAAAAAAAFJjeJhUBibl00lazjIsVc9z3uUW97U7de3TDSvOMFcwONuYe7TzaqZ2mHpBm+DoxuEqs1xE7tQ/CG0VXgcxu5th7M02rte000x0Uz1umdEd07fDOlvPrV5eX8Nd3TTdS/aRyn3sHCtdM01TE9SjcmJAAXfT/wAW/wBiO/SkUcEd0/8AExHYjv0pFHBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZo8F/WfizPbmlMdd2wmY1c/CzVPRRfiOH3ojb0xHlbMNAsPeu4fEW8RYuVW7tquK6K6Z2mmqJ3iYny7t0eSjVtrWejMJmu9MYuiPccZRHybtMRv0eSeiqPNLnfS/a+zyRq8cd1u6fPwn2/3mz216jrV7K3hySwBpTLgAAAAAAAAAAACG8oml8Ln2V3cNftxNNVMzHRwq6pTJ8sTRTcs1U1RvExs9eg1l9HqK5qc4fLPirlpNLeLzx5QdO4jIM7vYa9bmnaqrbo6t0YbS+E/p63irdWZWbMRctW+bcmmOM7dE/a1dvUTRcmmep2zTaimpxVy05Wji0/JScdprPOHAB91F40/wDExHYjv0pDHBH9Pfo8R2I79KQRwUstCoCqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABknwfdZTpbWdGExd2actzTm2L289FFe/5uv7JnafNVM9TGw8+r0tNXhthycrR/f0fTFktivF684b813L1u5zK8LfifPbly91q26bNyPTTLGPJxyi39TclsYnE4mqrN8mppw2MmavhXKdvzd2fTETEz5aZnrYo11ywZnh8RcsWMRc3pnborap8ycE/wDbP6Ml8sX+62jnEUxxpqgjE0S0TzDlY1Hfqnm47E0+i4tc8pGp5q53jTGfiyfMjB/tn9IPli/3XoFF6meESTeiOMS0EtcqGp6P8yxc/wDNlzq5U9T1f5ji/wAWT5kYf9s/pB8sX+632nE0R1Sp+VUeSWglXKZqeZ/xPF/iyp/4lamn/M8X+LJ8yMH+2f0g+WL/AHW/n5Xb8kn5VR5JaBxylam+s8X+LKscpepo/wAzxf4snzIwf7Z/SD5Yv91v5GJo8kqxfieFMtB6OVDU1P8AmOKn/my+1vlX1LTP9/xM/wDMk+ZGD/bP6QfLF/ut9Iu7/Iq/ce6/6Kv3NFbfLBqWmP75iJ/5hc5YNS1frmIj/mHzIw/7Z/SD5Yv91vV7rvwoq/crNN2uOi1cn7stE7HK/qW3XFX5ZiJ/5i+5fy+aiw1O01XK/TWfMjD/ALZ/SD5Yv91sRyv5TOLyfEU3LVW1ynm1bx1bNNNb5POW5ldoiaZjndUpdqjlhz3O6KqLl27RExwitjvM8yvY65Nd2qapmeuWzbXt3yfh7GL9aGO1Oft79bhwdHYNxknnXjT36PEdiO/SkEcEf09+jxHYjv0pBHBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXrRue38izablF6q3hcVROHxcR0xNurr265pnaqPRt1opyj4LE4DUuLs3a4uURXvRcp+LXExExMT1wuK8X8F75dIzg7dHPzHLPh779NeH4R/DO0eiaVqyiWLRyu0TRXNM8YnZxXVAAAAAAAAAAAAAAAAXnT36LE9iO/SkEcFg09+hxPYjv0r/ABwUstCoCqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB3MlzK9lOZ2sfYjnTRvTXRv0V0TG1VM+mJl0wFv5RcltZVmlu7hLvu+FxVqL9m5EcaaumPRPlhFWQrtGGx+ncZgMTvOKsUzdwVUz1b710f8A7R95j+7RNFyaZjaYl9Inio4gJAAAAAAAAAAAAAAF609+hxPYjv0r/HBYNPfoMT2I79K/xwUstCoCqQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFbVyuxft4i1MRctVRXTvG8bx5fMtOtcFFV+M5w9mbeGxlU1U0xwoq+VT9k7rq7OBtW8fauZRiao9yu73LG/Cm9EbR/FHR6YpWrKJY8H0v2q7NybddM01R1TD5rqgAAAAAAAAAAAAAL1p79BiexHfpX+OCx6cj+y4qf9NP8AuUr5HBSy0KgKpAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFKt9t6ZmmqJ3iYnpiVQHy1vg680wlOobGHimmKabOK5sbRF2OM7eeNp+3bqQpkbK7sTVcy2/di3gsdzbd6avi0zE/Brn0T/ACmUIz/L7uW5ricJdpmJtXKqeHkl9InirLoAJQAAAAAAAAAAAAkGmo/sGMn/AE0/7lC9QtGmY/8AxeNn/TT/ALlC7wpZaABVIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAClUb0zD6Z/gqs6yC3irNE14vAxzMTO/TVR8iv/AKT6PO4O1lGN/IMb7rVEzYu0TZxFMfKt1cftjomPPEJieCJhjyY2nZRItdZDOR5xXYouU3rM00127tHxa6ao3iY80wjr6KgAAAAAAAAAAAJLpn/Ccd2af9yhdI4LRpi9zsFisJRbquXbsUxTTTEzM7V0z0R9iSUZPnFUfByjMJ9GFr9itlodMXKnIM/q+LkeaT6MJc9jnGm9Rzw0/m0//SuexVK1C7e9nUn/ALezf1K5/wDyp72tR/8At/NvUrnsBahdJ07qGOOQ5r6nc9invez/AOos09TuewFsFy97+f8A1Hmnqdz2HiDPvqPNPVLnsBbRcvEGffUeZ+qXPYp4hz36kzP1S57DgLcLj4hz36kzP1S57FfEGffUeZ+qXPYC2i5eIM++o809Uuew8QZ99R5n6pc9hwFtFxnIc9j/ACTM/VLnsPEWefUuZ+qXPYC3C4eIs8+pcy9Uuew8RZ59S5l6pc9hwFvFw8RZ59S5n6pc9h4izz6lzP1S57AW8XDxFnn1LmXqlz2HiPO/qXMvVLnsBbxcPEed/UuZeqXPYeI87+psy9Vr9iBbx3/EmdfU2Y+q1+w8SZ19T5j6rX7E8B0B3/EmdfU+Y+q1+w8SZ19T5j6rX7EDoDv+JM6+p8x9Vr9h4kzr6nzH1Wv2A6A7/iTOvqfMfVa/YeJc6+p8x9Vr9gOgO/4lzn6nzH1Wv2KeJs5+qMx9Vr9iR0R3vE+cfVGY+q1+xTxPnH1RmHqtfsOA6Q7vifOPqjMPVa/YeJ84+qMw9Vr9iB0h3fE+cfVGYeq1+w8T5x9UZh6rX7AdId3xPnH1RmHqtfsPE+b/AFTmHq1fsB0h3fE+cfVGYeq1+w8T5x9UZh6rX7E8B0h3fE+cfVGYeq1+w8T5x9UZh6rX7EDpDu+J84+qMw9Wr9h4nzj6ozD1Wv2A6Q7vifOPqjMPVa/Yr4mzj6ozH1Wv2J4DojveJc5+p8x9Vr9h4lzn6nzH1Wv2IHRHfjJc5n/J8x9Vr9iviPO/qbMvVK/YngLeLhOR53HHJsy9Vr9jjOTZzHHKMx9Vr9hwHRUng7s5Tm0ccqx8f/Wr9jj4rzX6rx/q1fsOAri7VrN9K3cHXvVmGDmKrMzPx7O/TH3Zn90+Zjy5TNFyqmeMTMMjYWzm+VYu1mNOVYzexPO2rw9cU1R10z0cJjePtQbPrtm9md+7YtzboruVVRTPGmJngvCsugAlAAAAAAAAAAD7YXEXMNepu2qppqjhMTsvVvVeb29ubir3R/8AJIAumF5RdQ4enajE1/bXLv2eVrVFr4uIn+OQB9quWHVU/Pz/ABS+VfK3qmrjiJ/jkAde5ypamr44ir+OXxq5StRz+s1/xyAOE8o2op/Wa/45cZ5RNQ/Sq/45AFJ5Q9Qz+tXP45cJ1/n8/rVz8SQAjX+fx+tXPxJco5QtQR+tXPxJAHL/AMRNQ/Sq/wCOXGrlC1BPHFXP45AHCde5/PHFXPxJcZ13n0/rVz8SQBT38579Lu/iS4+/jPvpV38SQBWNc579Ku/iSrOus9n9bu/iSAOM64z2f1q7+JKnv3z36Vd/EkAJ1tns/rV38SXGdZ55P63d/EkAcffjnf0u7+JJ78c7+l3fxJAFPfhnf0u9+JJOr86+l3vxJAFJ1dnX0u9+JJ77s6+l3vxJAD33Z19LvfiSp77c6+l3vxJAFJ1XnM/rd78SXGdU5xP63e/EkAcZ1Pm/0y/+JKnvlzf6Zf8AxJAD3yZt9Mv/AIknvlzb6Zf/ABJAD3y5v9Mv/iSe+XN/pl/8SQBSdSZt9Mv/AIkkajzb6Zf/ABJAFY1Lm8frl/8AElX3zZv9Mv8A4kgCnvlzf6Zf/Ek98mbfTL/4kgCnvkzb6Xf/ABJV98mbfTL/AOJIArGps3+mX/xJVjVGbx+uXvxJAHL31Zx9LvfiSp76s4+l3vxJAHKnVmc0z0Yu9+JL70a1zyiOjF3fxJAHG5rPPK+OLu/iS+FzVGcV8cXe/EkAdevPs0r44y/+LLjGeZnH65f/ABJAC9neY3rXudeKvTH7SVuqmapmZneZAFAAAAAAAAAAAAf/2Q==" alt="Last Larch">
+      Last Larch
+    </div>
+    <div class="footer-sub">Risk intelligence. Trade flow modelling. Geneva.</div>
+  </div>
+  <div class="footer-right">
+    Methodology document<br>
+    April 2026<br>
+    <span class="footer-email">fysh@lastlarch.com</span>
+  </div>
+</footer>
+
+</body>
+</html>
