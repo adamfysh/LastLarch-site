@@ -425,3 +425,53 @@ body {
 .btn-primary:hover {
   opacity: 0.8;
 }
+/* ── Custom Tables (Last Larch Extension) ────────────────── */
+
+.table-wrapper {
+  margin: 40px 0;
+  border-top: var(--rule) solid var(--charcoal);
+  overflow-x: auto;
+}
+
+.larch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--ff-body);
+  color: var(--char-m);
+}
+
+.larch-table thead th {
+  font-family: var(--ff-serif);
+  font-size: 18px;
+  color: var(--charcoal);
+  text-align: left;
+  padding: 20px 15px;
+  background-color: var(--ivory-d);
+  border-bottom: 1px solid var(--gold);
+}
+
+.larch-table td {
+  padding: 18px 15px;
+  border-bottom: 0.5px solid var(--ivory-d);
+  vertical-align: top;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.larch-table .id-cell {
+  font-family: var(--ff-serif);
+  color: var(--gold-d);
+  font-weight: bold;
+  font-size: 16px;
+  width: 60px;
+}
+
+.larch-table .theme-cell {
+  font-weight: 500;
+  color: var(--charcoal);
+  width: 200px;
+}
+
+.larch-table tr:hover {
+  background-color: rgba(200, 168, 75, 0.05); /* Very subtle gold tint */
+}
