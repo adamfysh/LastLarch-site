@@ -425,12 +425,13 @@ body {
 .btn-primary:hover {
   opacity: 0.8;
 }
-/* ── Custom Tables (Last Larch — Relaxed & Elegant) ────────────────── */
+/* ── Custom Tables (Last Larch — Ultra-Spacious Edition) ────────────────── */
 
 .table-wrapper {
-  margin: 80px 0; /* Huge vertical buffer between sections */
+  margin: 100px 0; 
   border-top: var(--rule) solid var(--charcoal);
-  overflow-x: auto;
+  /* This ensures the table doesn't feel "trapped" if the screen is narrow */
+  width: 100%;
 }
 
 .larch-table {
@@ -438,44 +439,50 @@ body {
   border-collapse: collapse;
   font-family: var(--ff-body);
   color: var(--char-m);
+  /* This helps the table layout more naturally */
+  table-layout: auto; 
 }
 
 .larch-table thead th {
   font-family: var(--ff-serif);
-  font-size: 20px;
+  font-size: 22px;
   color: var(--charcoal);
   text-align: left;
-  padding: 32px 24px; /* Deep padding for header */
+  padding: 40px 30px; 
   background-color: var(--ivory-d);
   border-bottom: 1px solid var(--gold);
 }
 
 .larch-table td {
-  padding: 32px 24px; /* Maximum air around the text */
+  padding: 45px 30px; /* Massive vertical buffer between rows */
   border-bottom: 0.5px solid var(--ivory-d);
   vertical-align: top;
-  font-size: 15px;
-  line-height: 1.8; /* Tall line height to prevent density */
+  font-size: 16px;
+  line-height: 1.9; /* Very open line height */
+  letter-spacing: 0.01em; /* Subtle breathing room for letters */
 }
 
 /* The ID Column (A1, B1, etc.) */
 .larch-table .id-cell {
   font-family: var(--ff-serif);
-  color: var(--gold-d); /* Dark Gold as requested */
+  color: var(--gold-d); 
   font-weight: 400;
-  font-size: 20px;
-  width: 120px; /* Wide column to create a left-side margin effect */
-  padding-left: 32px; /* Extra buffer from the left edge */
+  font-size: 22px;
+  /* Keeps the ID on one line and creates a massive visual margin */
+  white-space: nowrap; 
+  padding-right: 60px; 
+  padding-left: 10px;
 }
 
 /* The Theme Column */
 .larch-table .theme-cell {
   font-weight: 500;
   color: var(--charcoal);
-  width: 280px; /* Prevents themes from wrapping too aggressively */
-  font-size: 16px;
+  font-size: 18px;
+  padding-right: 40px; /* Big gutter between theme and description */
+  width: 30%; /* Limits how much this column can hog space */
 }
 
 .larch-table tr:hover {
-  background-color: rgba(200, 168, 75, 0.03); /* Subtle gold breath on hover */
+  background-color: rgba(200, 168, 75, 0.02); 
 }
