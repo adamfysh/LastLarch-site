@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAP Alert Wizard</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0d1117; --surface: #161b22; --surface2: #1c2330;
+  --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.16);
+  --text: #e6edf3; --muted: #7d8590;
+  --accent: #f0a500; --accent-dim: rgba(240,165,0,0.12);
+  --green: #3fb950; --red: #f85149; --blue: #58a6ff; --purple: #bc8cff;
+  --sans: 'DM Sans', sans-serif; --mono: 'DM Mono', monospace; --serif: 'Instrument Serif', serif;
+  --radius: 8px; --radius-lg: 12px;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-weight: 300; min-height: 100vh; font-size: 15px; line-height: 1.6; display: flex; flex-direction: column; }
+
+/* ── HEADER ── */
+#app-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 24px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.logo-mark { width: 26px; height: 26px; border: 1.5px solid var(--accent); border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.app-title { font-family: var(--serif); font-size: 17px; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.db-status { display: flex; align-items: center; gap: 6px; font-size: 11px; font-family: var(--mono); color: var(--muted); padding: 5px 10px; border: 1px solid var(--border2); border-radius: 20px; cursor: pointer; transition: all 0.15s; }
+.db-status:hover { border-color: var(--accent); color: var(--accent); }
+.db-status.loaded { border-color: rgba(63,185,80,0.4); color: var(--green); }
+.db-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; }
+.db-status.loaded .db-dot { background: var(--green); }
+
+/* Settings panel */
+#settings-panel { display: none; position: fixed; top: 0; right: 0; bottom: 0; width: 360px; background: var(--surface); border-left: 1px solid var(--border); z-index: 2000; padding: 24px; overflow-y: auto; }
+#settings-panel.open { display: block; }
+.settings-title { font-family: var(--serif); font-size: 1.2rem; margin-bottom: 6px; }
+.settings-sub { font-size: 12px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+.settings-close { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid var(--border2); border-radius: 6px; color: var(--muted); font-size: 12px; font-family: var(--mono); padding: 4px 10px; cursor: pointer; }
+.settings-close:hover { color: var(--text); }
+.db-drop-zone { border: 1px dashed var(--border2); border-radius: var(--radius-lg); padding: 24px; text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 12px; }
+.db-drop-zone:hover { border-color: var(--accent); background: var(--accent-dim); }
+.db-drop-zone.loaded { border-color: rgba(63,185,80,0.5); border-style: solid; background: rgba(63,185,80,0.05); }
+.db-drop-main { font-size: 13px; margin-bottom: 4px; }
+.db-drop-sub { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.db-stats { font-size: 12px; color: var(--muted); font-family: var(--mono); padding: 10px 12px; background: var(--surface2); border-radius: var(--radius); margin-bottom: 16px; line-height: 1.8; }
+
+/* ── WIZARD STEPS ── */
+#wizard-steps { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; padding: 0 24px; flex-shrink: 0; }
+.wz-step { display: flex; align-items: center; gap: 8px; padding: 13px 18px 13px 0; font-size: 12px; font-family: var(--mono); color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: all 0.2s; }
+.wz-step + .wz-step { padding-left: 18px; border-left: 1px solid var(--border); }
+.wz-step.active { color: var(--accent); border-bottom-color: var(--accent); }
+.wz-step.done { color: var(--green); }
+.wz-num { width: 18px; height: 18px; border-radius: 50%; border: 1px solid currentColor; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+.wz-step.done .wz-num { background: var(--green); border-color: var(--green); color: #0d1117; }
+
+/* ── LAYOUT ── */
+#app-body { flex: 1; display: flex; overflow: hidden; }
+.step-panel { display: none; width: 100%; }
+.step-panel.active { display: flex; }
+
+/* ── STEP 1: GEO QUERY ── */
+#step1 { flex-direction: row; overflow: hidden; }
+#geo-sidebar { width: 380px; min-width: 380px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+#geo-map { flex: 1; }
+.sb-section { padding: 13px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.sb-section.scrollable { overflow-y: auto; flex-shrink: 1; min-height: 0; }
+.sb-section.scrollable::-webkit-scrollbar { width: 4px; }
+.sb-section.scrollable::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.sec-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); font-family: var(--mono); margin-bottom: 9px; }
+.source-item { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--border); margin-bottom: 5px; background: var(--surface2); min-width: 0; }
+.source-toggle { width: 28px; height: 16px; background: var(--border2); border-radius: 8px; position: relative; cursor: pointer; flex-shrink: 0; border: none; outline: none; transition: background 0.2s; }
+.source-toggle.active { background: var(--accent); }
+.source-toggle::after { content: ''; position: absolute; width: 10px; height: 10px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; }
+.source-toggle.active::after { transform: translateX(12px); }
+.source-info { flex: 1; min-width: 0; overflow: hidden; }
+.source-name { font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.source-sub { font-size: 10px; color: var(--muted); font-family: var(--mono); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.src-badge { font-size: 9px; font-family: var(--mono); padding: 2px 6px; border-radius: 3px; flex-shrink: 0; font-weight: 500; }
+.badge-geojson { background: rgba(240,165,0,0.12); color: var(--accent); }
+.badge-api { background: rgba(88,166,255,0.12); color: var(--blue); }
+.badge-shp { background: rgba(248,81,73,0.12); color: var(--red); }
+.sb-btn { display: block; width: 100%; padding: 7px; border-radius: 6px; background: transparent; font-size: 12px; font-family: var(--sans); cursor: pointer; margin-top: 6px; transition: all 0.15s; text-align: center; border: 1px solid var(--border2); color: var(--muted); }
+.sb-btn:hover { border-color: var(--accent); color: var(--accent); }
+#fit-btn:hover { border-color: var(--blue); color: var(--blue); }
+#add-form { display: none; padding: 11px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; margin-top: 8px; }
+#add-form.visible { display: block; }
+.form-row { margin-bottom: 8px; }
+.form-row label { display: block; font-size: 10px; color: var(--muted); font-family: var(--mono); margin-bottom: 4px; }
+.form-row input, .form-row select { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: 5px; padding: 6px 9px; font-size: 12px; color: var(--text); font-family: var(--sans); outline: none; transition: border-color 0.15s; }
+.form-row input:focus, .form-row select:focus { border-color: var(--accent); }
+.form-row select option { background: var(--surface); }
+.form-actions { display: flex; gap: 6px; margin-top: 9px; }
+.btn-ok { flex: 1; padding: 7px; border-radius: 5px; font-size: 12px; font-family: var(--sans); font-weight: 500; cursor: pointer; border: none; background: var(--accent); color: #0d1117; transition: all 0.15s; }
+.btn-ok:hover { background: #ffb824; }
+.btn-cancel { flex: 1; padding: 7px; border-radius: 5px; font-size: 12px; font-family: var(--sans); cursor: pointer; background: transparent; color: var(--muted); border: 1px solid var(--border2); transition: all 0.15s; }
+.btn-cancel:hover { color: var(--text); }
+#add-feedback { font-size: 11px; font-family: var(--mono); margin-top: 7px; padding: 6px 9px; border-radius: 5px; display: none; }
+#add-feedback.error   { display: block; background: rgba(248,81,73,0.1); color: var(--red); border: 1px solid rgba(248,81,73,0.2); }
+#add-feedback.success { display: block; background: rgba(63,185,80,0.1); color: var(--green); border: 1px solid rgba(63,185,80,0.2); }
+#paste-input { width: 100%; height: 76px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; padding: 8px; font-size: 11px; font-family: var(--mono); color: var(--muted); resize: none; outline: none; line-height: 1.6; }
+#paste-input:focus { border-color: var(--accent); color: var(--text); }
+#paste-input::placeholder { color: var(--border2); }
+#paste-error { font-size: 11px; color: var(--red); font-family: var(--mono); margin-top: 4px; min-height: 14px; }
+.paste-actions { display: flex; gap: 6px; margin-top: 6px; }
+#paste-draw-btn { flex: 1; margin-top: 0; }
+#paste-clear-btn { width: auto; padding: 7px 11px; font-size: 11px; margin-top: 0; }
+#paste-clear-btn:hover { color: var(--red); border-color: var(--red); }
+#geo-results { padding: 13px 16px; border-top: 1px solid var(--border); flex-shrink: 0; }
+#results-empty { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+#summary-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 9px; }
+#summary-table th { text-align: left; font-size: 10px; font-family: var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 8px 6px 0; border-bottom: 1px solid var(--border2); font-weight: 500; }
+#summary-table td { padding: 6px 8px 6px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
+#summary-table tr:last-child td { border-bottom: none; }
+.td-name  { font-size: 12px; color: var(--text); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 160px; }
+.td-count { font-size: 13px; font-family: var(--mono); color: var(--accent); font-weight: 500; padding-right: 10px !important; }
+.td-type  { font-size: 10px; font-family: var(--mono); color: var(--muted); }
+#summary-total { font-size: 11px; font-family: var(--mono); color: var(--muted); margin-bottom: 9px; }
+.geo-actions { display: flex; gap: 8px; }
+#proceed-btn { flex: 1; padding: 9px; border-radius: 6px; font-size: 13px; font-family: var(--sans); font-weight: 500; cursor: pointer; border: none; background: var(--accent); color: #0d1117; transition: all 0.15s; }
+#proceed-btn:hover { background: #ffb824; }
+#clear-geo-btn { padding: 9px 11px; border-radius: 6px; font-size: 12px; font-family: var(--sans); cursor: pointer; background: transparent; color: var(--muted); border: 1px solid var(--border2); transition: all 0.15s; }
+#clear-geo-btn:hover { color: var(--red); border-color: var(--red); }
+#geo-status { padding: 7px 16px; border-top: 1px solid var(--border); font-size: 11px; font-family: var(--mono); color: var(--muted); display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+#status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; background: var(--muted); }
+#status-dot.ready   { background: var(--green); }
+#status-dot.loading { background: var(--accent); animation: pulse 1s infinite; }
+#status-dot.error   { background: var(--red); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* Leaflet */
+.leaflet-draw-toolbar a, .leaflet-bar a { background-color: var(--surface) !important; border-color: var(--border2) !important; color: var(--text) !important; }
+.leaflet-bar a:hover { background-color: var(--surface2) !important; }
+.leaflet-popup-content-wrapper { background: var(--surface2); color: var(--text); border: 1px solid var(--border2); border-radius: 8px; }
+.leaflet-popup-tip { background: var(--surface2); }
+.leaflet-popup-content { font-family: var(--sans); font-size: 12px; line-height: 1.6; margin: 10px 14px; }
+.leaflet-popup-content strong { color: var(--accent); font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 4px; }
+#drop-overlay { display: none; position: fixed; inset: 0; background: rgba(240,165,0,0.05); border: 2px dashed var(--accent); z-index: 9999; align-items: center; justify-content: center; flex-direction: column; gap: 8px; pointer-events: none; }
+#drop-overlay.visible { display: flex; }
+#drop-overlay p { font-size: 18px; font-weight: 500; color: var(--accent); }
+#drop-overlay small { font-size: 13px; color: var(--muted); font-family: var(--mono); }
+
+/* ── STEP 2: REVIEW ── */
+#step2 { flex-direction: column; overflow-y: auto; }
+.step-body { max-width: 740px; margin: 0 auto; padding: 32px 24px 60px; width: 100%; }
+.step-heading { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 5px; }
+.step-sub { color: var(--muted); font-size: 13px; margin-bottom: 26px; }
+.config-section { margin-bottom: 24px; }
+.config-section-label { font-size: 10px; font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.layer-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 10px; }
+.layer-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 12px; }
+.layer-card-name { font-size: 14px; font-weight: 500; }
+.layer-include { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.toggle-inc { width: 30px; height: 17px; background: var(--border2); border-radius: 9px; position: relative; cursor: pointer; flex-shrink: 0; border: none; outline: none; transition: background 0.2s; }
+.toggle-inc.on { background: var(--green); }
+.toggle-inc::after { content: ''; position: absolute; width: 11px; height: 11px; background: white; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; }
+.toggle-inc.on::after { transform: translateX(13px); }
+.layer-stats { display: flex; gap: 20px; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.layer-stat strong { font-family: var(--mono); font-size: 15px; color: var(--text); display: block; }
+.db-match-preview { font-size: 11px; font-family: var(--mono); color: var(--muted); padding: 7px 10px; background: var(--surface2); border-radius: 5px; display: none; }
+.db-match-preview.visible { display: block; }
+.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: 11px; font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+.field select, .field input, .field textarea { width: 100%; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: var(--sans); font-size: 13px; font-weight: 300; padding: 8px 11px; outline: none; transition: border-color 0.15s; appearance: none; }
+.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237d8590' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 11px center; padding-right: 30px; background-color: var(--surface); cursor: pointer; }
+.field select option { background: var(--surface2); }
+.field select:focus, .field input:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.field textarea { resize: vertical; min-height: 76px; line-height: 1.6; }
+.sev-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.sev-opt { border: 1px solid var(--border); border-radius: var(--radius); padding: 7px; cursor: pointer; text-align: center; transition: all 0.15s; font-size: 12px; color: var(--muted); user-select: none; }
+.sev-opt:hover { border-color: var(--border2); color: var(--text); }
+.sev-opt.sel-minor    { border-color: var(--green);  background: rgba(63,185,80,0.1);   color: var(--green);  }
+.sev-opt.sel-moderate { border-color: #d29922;        background: rgba(210,153,34,0.1);  color: #d29922;       }
+.sev-opt.sel-severe   { border-color: #e3704a;        background: rgba(227,112,74,0.1);  color: #e3704a;       }
+.sev-opt.sel-extreme  { border-color: var(--red);     background: rgba(248,81,73,0.12);  color: var(--red);    }
+.sev-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin: 0 auto 3px; }
+.ai-config { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
+.model-presets { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
+.model-preset { padding: 4px 11px; border-radius: 20px; font-size: 11px; font-family: var(--mono); border: 1px solid var(--border2); color: var(--muted); cursor: pointer; transition: all 0.15s; background: transparent; }
+.model-preset:hover { border-color: var(--accent); color: var(--accent); }
+.model-preset.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.key-hint { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-top: 4px; }
+.step-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--border); }
+.nav-back { padding: 9px 18px; background: transparent; border: 1px solid var(--border2); border-radius: var(--radius); color: var(--muted); font-family: var(--sans); font-size: 13px; cursor: pointer; transition: all 0.15s; }
+.nav-back:hover { color: var(--text); }
+.nav-next { padding: 9px 22px; background: var(--accent); border: none; border-radius: var(--radius); color: #0d1117; font-family: var(--sans); font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.nav-next:hover { background: #ffb824; }
+.nav-next:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── STEP 3: RESULTS ── */
+#step3 { flex-direction: column; overflow-y: auto; }
+.loading-bar { display: flex; align-items: center; gap: 12px; padding: 13px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); font-size: 13px; color: var(--muted); margin-bottom: 1.2rem; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--border2); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.75s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-bar { padding: 11px 14px; background: rgba(248,81,73,0.08); border: 1px solid rgba(248,81,73,0.3); border-radius: var(--radius); color: var(--red); font-size: 13px; margin-bottom: 1rem; display: none; }
+.results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+.results-title { font-family: var(--serif); font-size: 1.3rem; font-weight: 400; }
+.sector-count { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.hazard-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-family: var(--mono); color: var(--muted); padding: 3px 9px; border: 1px solid var(--border); border-radius: 20px; margin-bottom: 0.9rem; }
+.hazard-dot { width: 6px; height: 6px; border-radius: 50%; }
+/* Source badges */
+.source-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 4px; margin-bottom: 10px; }
+.source-tag.library     { background: rgba(63,185,80,0.12);   color: var(--green);  border: 1px solid rgba(63,185,80,0.3);   }
+.source-tag.contextual  { background: rgba(240,165,0,0.12);   color: var(--accent); border: 1px solid rgba(240,165,0,0.3);   }
+.source-tag.synthesised { background: rgba(188,140,255,0.12); color: var(--purple); border: 1px solid rgba(188,140,255,0.3); }
+.source-tag-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.sector-card { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 12px; }
+.sector-card-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 13px 16px; background: var(--surface); border-bottom: 1px solid var(--border); gap: 10px; }
+.sector-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.sector-audience { font-size: 11px; color: var(--muted); font-family: var(--mono); }
+.copy-btn { flex-shrink: 0; padding: 4px 10px; font-size: 11px; font-family: var(--mono); border: 1px solid var(--border); border-radius: 5px; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+.copy-btn.copied { border-color: var(--green); color: var(--green); }
+.sector-card-body { padding: 14px 16px; background: var(--bg); }
+.cap-ref { font-family: var(--mono); font-size: 10px; color: var(--accent); background: var(--accent-dim); border: 1px solid rgba(240,165,0,0.25); padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 5px; }
+.headline-block { margin-bottom: 11px; padding-bottom: 11px; border-bottom: 1px solid var(--border); }
+.headline-text { font-size: 14px; font-weight: 500; line-height: 1.4; }
+.desc-text { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
+/* Library messages block */
+.library-block { margin-top: 12px; padding: 12px; background: rgba(63,185,80,0.05); border: 1px solid rgba(63,185,80,0.15); border-radius: var(--radius); }
+.library-block-label { font-size: 10px; font-family: var(--mono); color: var(--green); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+.library-msg { font-size: 12px; color: var(--text); line-height: 1.65; padding: 7px 0; border-bottom: 1px solid rgba(63,185,80,0.1); }
+.library-msg:last-child { border-bottom: none; padding-bottom: 0; }
+.library-msg-meta { font-size: 10px; color: var(--green); font-family: var(--mono); margin-bottom: 3px; opacity: 0.7; }
+.facts-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.fact-chip { font-size: 11px; font-family: var(--mono); padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+.legend-row { display: flex; gap: 14px; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-family: var(--mono); color: var(--muted); }
+.download-bar { margin-top: 1.8rem; padding: 13px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.download-bar p { font-size: 13px; color: var(--muted); }
+.download-bar strong { color: var(--text); }
+.ghost-sm { padding: 5px 11px; font-size: 12px; font-family: var(--mono); border: 1px solid var(--border2); border-radius: 5px; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.ghost-sm:hover { border-color: var(--accent); color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<div id="app-header">
+  <div class="logo-mark">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+      <path d="M8 2L14 5.5V10.5L8 14L2 10.5V5.5L8 2Z" stroke="#f0a500" stroke-width="1.2" fill="none"/>
+      <circle cx="8" cy="8" r="2" fill="#f0a500"/>
+    </svg>
+  </div>
+  <span class="app-title">CAP Alert Wizard</span>
+  <div class="header-right">
+    <div class="db-status" id="db-status-btn" onclick="toggleSettings()">
+      <span class="db-dot"></span>
+      <span id="db-status-label">No library loaded</span>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-panel">
+  <button class="settings-close" onclick="toggleSettings()">✕ Close</button>
+  <div class="settings-title">Early action library</div>
+  <p class="settings-sub">Load your <code style="font-family:var(--mono);font-size:11px;color:var(--accent)">.db</code> library file. Messages will be used to ground the AI output. Drop a new file at any time to replace.</p>
+  <div class="db-drop-zone" id="db-drop-zone" onclick="document.getElementById('db-file-input').click()">
+    <input type="file" id="db-file-input" accept=".db" style="display:none">
+    <div class="db-drop-main" id="db-drop-main">Click or drop to load library (.db)</div>
+    <div class="db-drop-sub" id="db-drop-sub">cap_early_action_library.db</div>
+  </div>
+  <div class="db-stats" id="db-stats" style="display:none"></div>
+  <div class="sec-label" style="margin-top:16px;margin-bottom:8px">About the library</div>
+  <p style="font-size:12px;color:var(--muted);line-height:1.7">The library provides pre-validated early action messages organised by hazard, sector, severity, and authority level. Where library messages exist for the selected hazard and severity, the AI will use them as reference. Output is tagged to show whether messages are from the library, contextualised from it, or synthesised where no library entry exists.</p>
+</div>
+
+<!-- WIZARD STEPS -->
+<div id="wizard-steps">
+  <div class="wz-step active" id="wz1"><span class="wz-num">1</span><span>Query impact area</span></div>
+  <div class="wz-step" id="wz2"><span class="wz-num">2</span><span>Review &amp; configure</span></div>
+  <div class="wz-step" id="wz3"><span class="wz-num">3</span><span>Alert descriptions</span></div>
+</div>
+
+<div id="app-body">
+
+  <!-- ── STEP 1: GEO QUERY ── -->
+  <div class="step-panel active" id="step1">
+    <div id="geo-sidebar">
+      <div class="sb-section scrollable" id="sources-section">
+        <div class="sec-label">Data sources</div>
+        <div id="sources-list"></div>
+        <button class="sb-btn" id="add-source-btn" onclick="toggleAddForm()">+ Add source</button>
+        <button class="sb-btn" id="fit-btn" onclick="fitToSources()">⊕ Fit map to data</button>
+        <div id="add-form">
+          <div class="form-row"><label>Source name</label><input type="text" id="new-name" placeholder="e.g. Health facilities"/></div>
+          <div class="form-row">
+            <label>Type</label>
+            <select id="new-type" onchange="onTypeChange()">
+              <option value="geojson">GeoJSON (URL)</option>
+              <option value="arcgis">ArcGIS REST / Web Map</option>
+              <option value="wfs">WFS endpoint</option>
+              <option value="shp">Shapefile (.zip)</option>
+            </select>
+          </div>
+          <div class="form-row" id="url-row"><label id="url-label">URL</label><input type="text" id="new-url" placeholder="https://..."/></div>
+          <div class="form-row" id="file-row" style="display:none">
+            <label>File (.zip or .geojson)</label>
+            <input type="file" id="new-file" accept=".zip,.geojson,.json" style="color:var(--muted);font-size:11px;padding:5px 0"/>
+          </div>
+          <div id="add-feedback"></div>
+          <div class="form-actions">
+            <button class="btn-ok" onclick="addSource()">Add</button>
+            <button class="btn-cancel" onclick="toggleAddForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="sb-section">
+        <div class="sec-label">Paste polygon</div>
+        <textarea id="paste-input" placeholder="Lat/lng pairs, GeoJSON, or WKT POLYGON(...)"></textarea>
+        <div id="paste-error"></div>
+        <div class="paste-actions">
+          <button class="sb-btn" id="paste-draw-btn" onclick="applyPaste()">⬡ Draw polygon</button>
+          <button class="sb-btn" id="paste-clear-btn" onclick="clearPaste()">✕</button>
+        </div>
+      </div>
+      <div id="geo-results">
+        <div class="sec-label">Results</div>
+        <div id="results-container"><div id="results-empty">No polygon drawn yet.</div></div>
+      </div>
+      <div id="geo-status">
+        <div id="status-dot" class="ready"></div>
+        <span id="status-text">Ready — draw a polygon</span>
+      </div>
+    </div>
+    <div id="geo-map"></div>
+  </div>
+
+  <!-- ── STEP 2: REVIEW & CONFIGURE ── -->
+  <div class="step-panel" id="step2">
+    <div class="step-body">
+      <h2 class="step-heading">Review &amp; configure</h2>
+      <p class="step-sub">Select layers to include, set hazard details, and configure the AI model.</p>
+
+      <div class="config-section">
+        <div class="config-section-label">Layers in polygon</div>
+        <div id="layer-review-list"></div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-label">Hazard &amp; severity</div>
+        <div class="settings-grid">
+          <div class="field">
+            <label>Hazard type</label>
+            <select id="hazardType" onchange="updateDbPreview()">
+              <option value="cy">Cyclone / Hurricane</option>
+              <option value="fl">Flood</option>
+              <option value="hw">Heatwave</option>
+              <option value="wf">Wildfire</option>
+              <option value="eq">Earthquake</option>
+              <option value="ts">Tsunami</option>
+              <option value="cw">Cold wave / Freeze</option>
+              <option value="do">Disease outbreak</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Severity</label>
+            <div class="sev-strip">
+              <div class="sev-opt" data-val="extreme"  onclick="setSev(this)"><div class="sev-dot"></div>Extreme</div>
+              <div class="sev-opt" data-val="severe"   onclick="setSev(this)"><div class="sev-dot"></div>Severe</div>
+              <div class="sev-opt" data-val="moderate" onclick="setSev(this)"><div class="sev-dot"></div>Moderate</div>
+              <div class="sev-opt" data-val="minor"    onclick="setSev(this)"><div class="sev-dot"></div>Minor</div>
+            </div>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <div class="field">
+            <label>Authority level</label>
+            <select id="authorityLevel">
+              <option value="auto">Auto — infer from data</option>
+              <option value="nat">National</option>
+              <option value="reg">Regional / Provincial</option>
+              <option value="loc">Local / Operational</option>
+              <option value="ind">Individual / Household</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Additional context <span style="text-transform:none;letter-spacing:0;font-size:10px">(optional)</span></label>
+            <input type="text" id="extraCtx" placeholder="Track, timing, compound hazards…"/>
+          </div>
+        </div>
+        <div id="library-preview" style="display:none;margin-top:4px;padding:9px 12px;background:var(--surface2);border-radius:var(--radius);font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.7;border:1px solid var(--border)"></div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-label">AI model</div>
+        <div class="ai-config">
+          <div class="model-presets">
+            <button class="model-preset active" onclick="setPreset(this,'https://api.anthropic.com/v1/messages','claude-sonnet-4-20250514','anthropic')">Claude (Anthropic)</button>
+            <button class="model-preset" onclick="setPreset(this,'https://api.openai.com/v1/chat/completions','gpt-4o','openai')">GPT-4o (OpenAI)</button>
+            <button class="model-preset" onclick="setPreset(this,'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions','gemini-2.0-flash','gemini')">Gemini (Google)</button>
+            <button class="model-preset" onclick="setPreset(this,'','','custom')">Custom</button>
+          </div>
+          <div class="settings-grid">
+            <div class="field" style="margin-bottom:0"><label>API endpoint</label><input type="text" id="ai-endpoint" value="https://api.anthropic.com/v1/messages"/></div>
+            <div class="field" style="margin-bottom:0"><label>Model name</label><input type="text" id="ai-model" value="claude-sonnet-4-20250514"/></div>
+          </div>
+          <div class="field" style="margin-top:12px;margin-bottom:0">
+            <label>API key</label>
+            <input type="password" id="ai-key" placeholder="Stored locally in your browser"/>
+            <div class="key-hint">Saved per provider in localStorage — only entered once.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="nav-back" onclick="goStep(1)">← Back to map</button>
+        <button class="nav-next" onclick="generate()">Generate alert descriptions →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: RESULTS ── -->
+  <div class="step-panel" id="step3">
+    <div class="step-body">
+      <div class="error-bar" id="errorBar"></div>
+      <div class="loading-bar" id="loadBar"><div class="spinner"></div><span id="loadTxt">Analysing impact data…</span></div>
+      <div id="resultsWrap" style="display:none">
+        <div class="results-header">
+          <div><div id="hazardBadge" class="hazard-badge"></div><div class="results-title">Sector descriptions</div></div>
+          <span class="sector-count" id="sectorCount"></span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-item"><span class="source-tag library" style="margin:0"><span class="source-tag-dot"></span>Library</span> — used as-is from validated library</div>
+          <div class="legend-item"><span class="source-tag contextual" style="margin:0"><span class="source-tag-dot"></span>Contextualised</span> — library message adapted with local data</div>
+          <div class="legend-item"><span class="source-tag synthesised" style="margin:0"><span class="source-tag-dot"></span>Synthesised</span> — no library match, generated from GIS data</div>
+        </div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:1.4rem;line-height:1.6" id="summaryText"></p>
+        <div id="sectorCards"></div>
+        <div class="download-bar">
+          <p><strong>All descriptions</strong> — download as plain text</p>
+          <button class="ghost-sm" onclick="downloadTxt()">Download .txt</button>
+        </div>
+        <div class="step-nav">
+          <button class="nav-back" onclick="goStep(2)">← Back to configure</button>
+          <button class="nav-next" onclick="goStep(1); resetGeo()">New query →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app-body -->
+
+<div id="drop-overlay">
+  <p>Drop file to add source</p>
+  <small>.geojson · .json · .zip (shapefile)</small>
+</div>
+
+<!-- sql.js for in-browser SQLite -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/sql-wasm.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+<script src="https://unpkg.com/shpjs@4.0.4/dist/shp.js"></script>
+<script>
+
+// ── SQL.JS INIT ───────────────────────────────────────────────────────────────
+let SQL = null;
+let libraryDB = null;
+let libraryMeta = {};
+
+async function initSQL() {
+  try {
+    SQL = await initSqlJs({ locateFile: f => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.2/' + f });
+  } catch(e) { console.warn('sql.js failed to load:', e); }
+}
+initSQL();
+
+async function loadLibraryDB(arrayBuffer) {
+  if (!SQL) { alert('SQL engine not ready yet — please try again in a moment.'); return; }
+  try {
+    libraryDB = new SQL.Database(new Uint8Array(arrayBuffer));
+    // Read meta
+    const meta = libraryDB.exec('SELECT key, value FROM library_meta');
+    if (meta[0]) meta[0].values.forEach(([k,v]) => { libraryMeta[k] = v; });
+    // Count messages
+    const counts = libraryDB.exec('SELECT COUNT(*) FROM action_messages WHERE activation_status != "off"');
+    const total  = counts[0]?.values[0][0] || 0;
+    const hazRes = libraryDB.exec('SELECT COUNT(DISTINCT hazard_id) FROM action_messages');
+    const hazCount = hazRes[0]?.values[0][0] || 0;
+    // Update UI
+    document.getElementById('db-drop-zone').classList.add('loaded');
+    document.getElementById('db-drop-main').textContent = '✓ Library loaded';
+    document.getElementById('db-drop-sub').textContent  = libraryMeta.description?.slice(0,60) + '…' || '';
+    document.getElementById('db-stats').style.display   = 'block';
+    document.getElementById('db-stats').textContent     = `${total} active messages · ${hazCount} hazards · v${libraryMeta.library_version || '?'}`;
+    document.getElementById('db-status-btn').classList.add('loaded');
+    document.getElementById('db-status-label').textContent = total + ' messages loaded';
+    updateDbPreview();
+  } catch(e) { alert('Could not read library: ' + e.message); }
+}
+
+// DB file input
+document.getElementById('db-file-input').addEventListener('change', async e => {
+  const f = e.target.files[0];
+  if (f) loadLibraryDB(await f.arrayBuffer());
+});
+const dbZone = document.getElementById('db-drop-zone');
+dbZone.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); });
+dbZone.addEventListener('drop', async e => {
+  e.preventDefault(); e.stopPropagation();
+  const f = e.dataTransfer.files[0];
+  if (f && f.name.endsWith('.db')) loadLibraryDB(await f.arrayBuffer());
+});
+
+function toggleSettings() {
+  document.getElementById('settings-panel').classList.toggle('open');
+}
+
+// ── QUERY LIBRARY ─────────────────────────────────────────────────────────────
+function queryLibrary(hazardId, severityId, authorityId) {
+  if (!libraryDB) return [];
+  let sql = `SELECT am.id, am.message_text, am.cap_instruction, am.cap_audience,
+    am.theme_id, am.sequence_order, am.validation_status, am.activation_status,
+    s.label as sector_label, s.id as sector_id,
+    al.label as authority_label
+    FROM action_messages am
+    JOIN sectors s ON am.sector_id = s.id
+    JOIN authority_levels al ON am.authority_level_id = al.id
+    WHERE am.hazard_id = '${hazardId}'
+    AND am.severity_id = '${severityId}'
+    AND am.activation_status != 'off'`;
+  if (authorityId && authorityId !== 'auto') sql += ` AND am.authority_level_id = '${authorityId}'`;
+  sql += ' ORDER BY s.id, al.sort_order, am.sequence_order';
+  try {
+    const res = libraryDB.exec(sql);
+    if (!res[0]) return [];
+    const cols = res[0].columns;
+    return res[0].values.map(row => {
+      const obj = {};
+      cols.forEach((c,i) => obj[c] = row[i]);
+      return obj;
+    });
+  } catch(e) { console.warn('DB query error:', e); return []; }
+}
+
+function getLibrarySectors() {
+  if (!libraryDB) return [];
+  const res = libraryDB.exec('SELECT id, label FROM sectors ORDER BY label');
+  if (!res[0]) return [];
+  return res[0].values.map(([id,label]) => ({ id, label }));
+}
+
+function updateDbPreview() {
+  const hazard   = document.getElementById('hazardType')?.value;
+  const severity = selectedSev;
+  const preview  = document.getElementById('library-preview');
+  if (!libraryDB || !hazard || !severity || !preview) { if(preview) preview.style.display='none'; return; }
+  const msgs = queryLibrary(hazard, severity, null);
+  const sectors = [...new Set(msgs.map(m => m.sector_label))];
+  if (!msgs.length) {
+    preview.style.display = 'block';
+    preview.textContent = '⚠ No library messages found for this hazard/severity combination.';
+  } else {
+    preview.style.display = 'block';
+    preview.innerHTML = `✓ ${msgs.length} library messages across ${sectors.length} sectors: ${sectors.join(', ')}`;
+  }
+}
+
+// ── MAP ───────────────────────────────────────────────────────────────────────
+const map = L.map('geo-map', { zoomControl: true }).setView([20, 15], 3);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+  attribution: '©OpenStreetMap ©CartoDB', maxZoom: 19
+}).addTo(map);
+const drawnItems   = new L.FeatureGroup().addTo(map);
+const resultLayers = new L.FeatureGroup().addTo(map);
+new L.Control.Draw({
+  draw: {
+    polygon:   { shapeOptions: { color:'#f0a500', weight:2, fillOpacity:0.08 } },
+    rectangle: { shapeOptions: { color:'#f0a500', weight:2, fillOpacity:0.08 } },
+    circle:false, marker:false, circlemarker:false, polyline:false
+  },
+  edit: { featureGroup: drawnItems }
+}).addTo(map);
+let intentionalMove = false;
+map.on('layeradd', () => { if (!intentionalMove) map.stop(); });
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let sources        = [{ id:'s1', name:'Sample points', type:'geojson', active:true, url:null, raw:makeSampleData() }];
+let currentPolygon = null;
+let lastResults    = [];
+let selectedSev    = '';
+let sectors        = [];
+let currentProvider = 'anthropic';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('cap_api_key');
+  if (saved) document.getElementById('ai-key').value = saved;
+});
+
+function makeSampleData() {
+  const pts = [
+    ['Paris',2.35,48.85],['Berlin',13.4,52.5],['Madrid',-3.7,40.4],['Rome',12.5,41.9],
+    ['Amsterdam',4.9,52.37],['Vienna',16.37,48.2],['Brussels',4.35,50.85],['Lisbon',-9.14,38.72],
+    ['Warsaw',21.01,52.23],['Prague',14.42,50.08],['Budapest',19.04,47.5],['Stockholm',18.07,59.33],
+    ['Copenhagen',12.57,55.68],['Zurich',8.54,47.38],['Barcelona',2.17,41.39],['Munich',11.58,48.14],
+    ['Milan',9.19,45.46],['Lyon',4.83,45.76],['Dublin',-6.27,53.34],['Helsinki',24.94,60.17]
+  ];
+  return { type:'FeatureCollection', features: pts.map(([name,lng,lat],i) => ({
+    type:'Feature', geometry:{type:'Point',coordinates:[lng,lat]},
+    properties:{ name, population:Math.floor(Math.random()*3e6+2e5), id:i }
+  }))};
+}
+
+// ── NORMALISE ─────────────────────────────────────────────────────────────────
+function normalise(raw) {
+  if (!raw) return { type:'FeatureCollection', features:[] };
+  if (Array.isArray(raw)) return { type:'FeatureCollection', features: raw.flatMap(fc => fc.features||[]) };
+  if (raw.type === 'FeatureCollection') {
+    const flat = [];
+    (raw.features||[]).forEach(f => {
+      if (f && f.type === 'FeatureCollection') flat.push(...(f.features||[]));
+      else if (f) flat.push(f);
+    });
+    return { type:'FeatureCollection', features:flat };
+  }
+  if (raw.type === 'Feature') return { type:'FeatureCollection', features:[raw] };
+  return raw;
+}
+
+// ── WIZARD NAV ────────────────────────────────────────────────────────────────
+function goStep(n) {
+  [1,2,3].forEach(i => {
+    document.getElementById('step'+i).classList.toggle('active', i===n);
+    const wz = document.getElementById('wz'+i);
+    wz.classList.remove('active','done');
+    if (i < n) wz.classList.add('done');
+    else if (i === n) wz.classList.add('active');
+  });
+  if (n === 2) buildLayerReview();
+  if (n === 1) setTimeout(() => map.invalidateSize(), 50);
+}
+
+// ── SOURCES ───────────────────────────────────────────────────────────────────
+function renderSources() {
+  const list = document.getElementById('sources-list');
+  list.innerHTML = '';
+  sources.forEach(s => {
+    const bCls = {geojson:'badge-geojson',arcgis:'badge-api',wfs:'badge-api',shp:'badge-shp'}[s.type]||'badge-geojson';
+    const bLbl = {geojson:'GeoJSON',arcgis:'ArcGIS',wfs:'WFS',shp:'Shapefile'}[s.type]||s.type;
+    const sub  = s.url||(s.raw?'local data':'file');
+    const el   = document.createElement('div');
+    el.className = 'source-item';
+    el.innerHTML = `
+      <button class="source-toggle ${s.active?'active':''}" onclick="toggleSource('${s.id}')"></button>
+      <div class="source-info"><div class="source-name">${s.name}</div><div class="source-sub" title="${sub}">${sub}</div></div>
+      <span class="src-badge ${bCls}">${bLbl}</span>`;
+    list.appendChild(el);
+  });
+}
+
+function toggleSource(id) {
+  const s = sources.find(x => x.id===id);
+  if (!s) return;
+  s.active = !s.active;
+  renderSources();
+  if (currentPolygon) runQuery(currentPolygon);
+  else resultLayers.clearLayers();
+}
+
+function toggleAddForm() { document.getElementById('add-form').classList.toggle('visible'); setFeedback('',''); }
+
+function setFeedback(msg, type) {
+  const el = document.getElementById('add-feedback');
+  el.textContent = msg; el.className = type||''; el.style.display = msg?'':'none';
+}
+
+function onTypeChange() {
+  const t = document.getElementById('new-type').value;
+  document.getElementById('url-row').style.display  = t==='shp'?'none':'';
+  document.getElementById('file-row').style.display = t==='shp'?'':'none';
+  const labels = {geojson:'URL',arcgis:'ArcGIS REST or Web Map URL',wfs:'WFS GetFeature URL'};
+  document.getElementById('url-label').textContent = labels[t]||'URL';
+  setFeedback('','');
+}
+
+async function addSource() {
+  const name = document.getElementById('new-name').value.trim();
+  const type = document.getElementById('new-type').value;
+  const url  = document.getElementById('new-url').value.trim();
+  const file = document.getElementById('new-file').files[0];
+  if (!name) { setFeedback('Please enter a source name.','error'); return; }
+  if (type==='shp' && !file) { setFeedback('Please select a .zip shapefile.','error'); return; }
+  if (type!=='shp' && !url && type!=='arcgis' && type!=='wfs') { setFeedback('Please enter a URL.','error'); return; }
+  if ((type==='arcgis'||type==='wfs') && !url) { setFeedback('Please enter the endpoint URL.','error'); return; }
+  if (type==='arcgis' && url && (url.includes('arcgis.com/home/item')||url.includes('webmap='))) {
+    setFeedback('Extracting layers from web map…','success');
+    try { await extractWebMapLayers(url, name); } catch(e) { setFeedback('Could not extract: '+e.message,'error'); }
+    return;
+  }
+  const src = { id:'s'+Date.now(), name, type, active:true, url:(type!=='shp'&&url)?url:null, raw:null };
+  setFeedback('Loading…','success');
+  try {
+    if (type==='geojson'&&url) { const r=await fetch(url); if(!r.ok) throw new Error('HTTP '+r.status); src.raw=normalise(await r.json()); }
+    else if (type==='shp'&&file) { src.raw=normalise(await shp(await file.arrayBuffer())); }
+  } catch(e) { setFeedback('Failed: '+e.message,'error'); return; }
+  sources.push(src); renderSources();
+  setFeedback('"'+name+'" added.','success');
+  document.getElementById('new-name').value=''; document.getElementById('new-url').value=''; document.getElementById('new-file').value='';
+  setTimeout(()=>{ document.getElementById('add-form').classList.remove('visible'); setFeedback('',''); },1400);
+  setStatus('ready','Added "'+name+'"');
+  if (currentPolygon) runQuery(currentPolygon);
+}
+
+async function extractWebMapLayers(url, baseName) {
+  const idMatch=url.match(/[?&]id=([a-f0-9]{32})/i), wmMatch=url.match(/[?&]webmap=([a-f0-9]{32})/i);
+  const itemId=(idMatch||wmMatch)?.[1];
+  if (!itemId) throw new Error('Could not find item ID in URL');
+  const resp=await fetch('https://www.arcgis.com/sharing/rest/content/items/'+itemId+'/data?f=json');
+  if (!resp.ok) throw new Error('HTTP '+resp.status+' — item may be private');
+  const def=await resp.json();
+  if (def.error) throw new Error(def.error.message||'ArcGIS error');
+  const layers=(def.operationalLayers||[]).filter(l=>l.url);
+  if (!layers.length) throw new Error('No queryable layers found');
+  layers.forEach((l,i)=>{
+    let lu=l.url.replace(/\/$/,'');
+    if (/\/(FeatureServer|MapServer)\/?$/i.test(lu)) lu+='/0';
+    sources.push({id:'s'+Date.now()+i,name:l.title||baseName+' '+(i+1),type:'arcgis',active:true,url:lu,raw:null});
+  });
+  renderSources();
+  setFeedback(layers.length+' layer'+(layers.length>1?'s':'')+' added.','success');
+  document.getElementById('new-name').value=''; document.getElementById('new-url').value='';
+  setTimeout(()=>{ document.getElementById('add-form').classList.remove('visible'); setFeedback('',''); },1800);
+  setStatus('ready','Added '+layers.length+' layers from web map');
+  if (currentPolygon) runQuery(currentPolygon);
+}
+
+// ── FIT MAP ───────────────────────────────────────────────────────────────────
+const GLOBAL_THRESHOLD = 9720;
+function fitToSources() {
+  const boxes=[];
+  sources.forEach(s=>{
+    if (!s.raw) return;
+    try { const bb=turf.bbox(s.raw); if(!isFinite(bb[0])) return; const area=(bb[2]-bb[0])*(bb[3]-bb[1]); if(area>GLOBAL_THRESHOLD) return; boxes.push({bb,area}); } catch(e){}
+  });
+  if (!boxes.length) { setStatus('ready','No local data to fit to'); return; }
+  const minArea=Math.min(...boxes.map(b=>b.area));
+  const local=boxes.filter(b=>b.area<=minArea*10);
+  const m=local.map(b=>b.bb).reduce((a,b)=>[Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.max(a[2],b[2]),Math.max(a[3],b[3])]);
+  intentionalMove=true;
+  map.flyToBounds([[m[1],m[0]],[m[3],m[2]]],{padding:[40,40],maxZoom:12,duration:1.2});
+  setTimeout(()=>{intentionalMove=false;},1500);
+  setStatus('ready','Fit to '+local.length+' local source'+(local.length>1?'s':''));
+}
+
+// ── PASTE POLYGON ─────────────────────────────────────────────────────────────
+function applyPaste() {
+  const raw=document.getElementById('paste-input').value.trim();
+  const errEl=document.getElementById('paste-error');
+  errEl.textContent=''; if (!raw) return;
+  let polygon=null;
+  try { const j=JSON.parse(raw); if(j.type==='FeatureCollection') polygon=j.features[0]; else if(j.type==='Feature') polygon=j; else if(j.type==='Polygon'||j.type==='MultiPolygon') polygon={type:'Feature',geometry:j,properties:{}}; } catch(e){}
+  if (!polygon) { const u=raw.trim().toUpperCase(); if(u.startsWith('POLYGON')||u.startsWith('MULTIPOLYGON')) { try{polygon=parseWKT(raw);}catch(e){} } }
+  if (!polygon) {
+    try {
+      const lines=raw.split(/[\n;]+/).map(l=>l.trim()).filter(Boolean);
+      const coords=lines.map(line=>{ const p=line.split(/[\s,;]+/).map(Number).filter(n=>!isNaN(n)); if(p.length<2) throw new Error('bad'); const[a,b]=p; return Math.abs(a)>90?[a,b]:[b,a]; });
+      if(coords.length<3) throw new Error('Need 3+');
+      const f=coords[0],l=coords[coords.length-1]; if(f[0]!==l[0]||f[1]!==l[1]) coords.push([...f]);
+      polygon={type:'Feature',geometry:{type:'Polygon',coordinates:[coords]},properties:{}};
+    } catch(e){}
+  }
+  if (!polygon) { errEl.textContent='Could not parse. Try lat/lng pairs, GeoJSON, or WKT.'; return; }
+  drawnItems.clearLayers();
+  const layer=L.geoJSON(polygon,{style:{color:'#f0a500',weight:2,fillOpacity:0.08}}); drawnItems.addLayer(layer);
+  intentionalMove=true; map.flyToBounds(layer.getBounds(),{padding:[40,40],maxZoom:14,duration:1.0}); setTimeout(()=>{intentionalMove=false;},1500);
+  currentPolygon=polygon; runQuery(polygon);
+}
+function clearPaste() { document.getElementById('paste-input').value=''; document.getElementById('paste-error').textContent=''; }
+function parseWKT(wkt) {
+  const inner=wkt.trim().replace(/^MULTIPOLYGON\s*\(/i,'').replace(/^POLYGON\s*\(/i,'').replace(/\)\s*$/,'');
+  const ringStr=inner.replace(/^\s*\(/,'').replace(/\)\s*.*$/,'');
+  const coords=ringStr.split(',').map(pair=>{const p=pair.trim().split(/\s+/).map(Number);return[p[0],p[1]];});
+  if(coords.length<3) throw new Error('Too few points');
+  const f=coords[0],l=coords[coords.length-1]; if(f[0]!==l[0]||f[1]!==l[1]) coords.push([...f]);
+  return {type:'Feature',geometry:{type:'Polygon',coordinates:[coords]},properties:{}};
+}
+
+// ── DRAW EVENTS ───────────────────────────────────────────────────────────────
+map.on(L.Draw.Event.CREATED,e=>{drawnItems.clearLayers();drawnItems.addLayer(e.layer);currentPolygon=e.layer.toGeoJSON();runQuery(currentPolygon);});
+map.on(L.Draw.Event.EDITED,e=>{e.layers.eachLayer(l=>{currentPolygon=l.toGeoJSON();runQuery(currentPolygon);});});
+map.on(L.Draw.Event.DELETED,()=>{currentPolygon=null;lastResults=[];resultLayers.clearLayers();showEmpty('No polygon drawn yet.');setStatus('ready','Ready — draw a polygon');});
+
+// ── QUERY ─────────────────────────────────────────────────────────────────────
+async function runQuery(polygon) {
+  setStatus('loading','Querying sources…'); resultLayers.clearLayers();
+  const active=sources.filter(s=>s.active);
+  if (!active.length) { showEmpty('No active sources.'); setStatus('ready','No active sources'); return; }
+  const results=[];
+  for (const s of active) {
+    try {
+      let geojson=s.raw;
+      if (!geojson&&s.url) {
+        if(s.type==='arcgis') geojson=await queryArcGIS(s.url,polygon);
+        else if(s.type==='wfs') geojson=await queryWFS(s.url,polygon);
+        else geojson=normalise(await (await fetch(s.url)).json());
+      }
+      if (!geojson) { results.push({source:s,features:[]}); continue; }
+      const fc=geojson.type==='FeatureCollection'?geojson:{type:'FeatureCollection',features:[geojson]};
+      const matches=[];
+      fc.features.forEach(f=>{try{if(turf.booleanIntersects(f,polygon))matches.push(f);}catch(e){}});
+      results.push({source:s,features:matches});
+      if (matches.length) {
+        resultLayers.addLayer(L.geoJSON({type:'FeatureCollection',features:matches},{
+          style:{color:'#f0a500',weight:1.5,fillOpacity:0.15},
+          pointToLayer:(_,ll)=>L.circleMarker(ll,{radius:6,fillColor:'#f0a500',color:'#fff',weight:1,fillOpacity:0.9}),
+          onEachFeature:(f,l)=>{const top=Object.entries(f.properties||{}).slice(0,3);l.bindPopup('<strong>'+s.name+'</strong>'+top.map(([k,v])=>'<div><span style="color:var(--muted);font-family:var(--mono)">'+k+':</span> '+v+'</div>').join(''));}
+        }));
+      }
+    } catch(e) { results.push({source:s,error:e.message}); }
+  }
+  lastResults=results;
+  renderGeoResults(results);
+  const total=results.reduce((n,r)=>n+(r.features?.length||0),0);
+  setStatus('ready',total.toLocaleString()+' features found');
+}
+
+async function queryArcGIS(url,poly) {
+  let base=url.replace(/\/query$/,'');
+  if(/\/(FeatureServer|MapServer)\/?$/i.test(base)) base=base.replace(/\/?$/,'/0');
+  const rings=[poly.geometry.coordinates[0].map(c=>[c[0],c[1]])];
+  const p=new URLSearchParams({f:'geojson',geometry:JSON.stringify({rings,spatialReference:{wkid:4326}}),geometryType:'esriGeometryPolygon',spatialRel:'esriSpatialRelIntersects',outFields:'*',returnGeometry:true});
+  return (await fetch(base+'/query?'+p)).json();
+}
+async function queryWFS(url,poly) {
+  const bb=turf.bbox(poly);
+  return (await fetch(url+'&SERVICE=WFS&REQUEST=GetFeature&OUTPUTFORMAT=application/json&BBOX='+bb.join(',')+',EPSG:4326')).json();
+}
+
+// ── GEO RESULTS ───────────────────────────────────────────────────────────────
+function renderGeoResults(results) {
+  const container=document.getElementById('results-container');
+  const total=results.reduce((n,r)=>n+(r.features?.length||0),0);
+  if (!total&&!results.some(r=>r.error)) { showEmpty('No features found in this area.'); return; }
+  const rows=results.map(r=>{
+    if(r.error) return '<tr><td class="td-name">'+r.source.name+'</td><td class="td-count" style="color:var(--red)">—</td><td class="td-type" style="color:var(--red)">'+r.error+'</td></tr>';
+    const n=r.features?.length||0;
+    const types=[...new Set((r.features||[]).map(f=>f.geometry?.type||'').filter(Boolean))].join(', ');
+    return '<tr><td class="td-name">'+r.source.name+'</td><td class="td-count">'+n.toLocaleString()+'</td><td class="td-type">'+(types||'—')+'</td></tr>';
+  }).join('');
+  container.innerHTML=
+    '<table id="summary-table"><thead><tr><th>Source</th><th>Features</th><th>Type</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div id="summary-total">'+total.toLocaleString()+' total features in polygon</div>'+
+    '<div class="geo-actions"><button id="proceed-btn" onclick="goStep(2)">Review &amp; generate CAP →</button><button id="clear-geo-btn" onclick="clearResults()">✕ Clear</button></div>';
+}
+
+function clearResults() {
+  currentPolygon=null; lastResults=[]; resultLayers.clearLayers(); drawnItems.clearLayers();
+  document.getElementById('paste-input').value=''; document.getElementById('paste-error').textContent='';
+  showEmpty('No polygon drawn yet.'); setStatus('ready','Ready — draw a polygon');
+}
+function showEmpty(msg) { document.getElementById('results-container').innerHTML='<div id="results-empty">'+(msg||'No polygon drawn yet.')+'</div>'; }
+function setStatus(state,text) { document.getElementById('status-dot').className=state; document.getElementById('status-text').textContent=text; }
+function resetGeo() { clearResults(); document.getElementById('resultsWrap').style.display='none'; document.getElementById('loadBar').style.display='flex'; document.getElementById('errorBar').style.display='none'; }
+
+// ── STEP 2: LAYER REVIEW ──────────────────────────────────────────────────────
+function buildLayerReview() {
+  const list=document.getElementById('layer-review-list');
+  if (!lastResults.length) { list.innerHTML='<p style="color:var(--muted);font-size:13px">No results yet — go back and draw a polygon.</p>'; return; }
+  list.innerHTML=lastResults.map((r,i)=>{
+    const n=r.features?.length||0;
+    const types=[...new Set((r.features||[]).map(f=>f.geometry?.type||'').filter(Boolean))].join(', ');
+    const props=n>0?Object.keys(r.features[0].properties||{}).length:0;
+    return `<div class="layer-card">
+      <div class="layer-card-head">
+        <span class="layer-card-name">${r.source.name}</span>
+        <div class="layer-include"><button class="toggle-inc on" id="inc_${i}" onclick="this.classList.toggle('on')"></button>Include</div>
+      </div>
+      <div class="layer-stats">
+        <div class="layer-stat"><strong>${n.toLocaleString()}</strong>features</div>
+        <div class="layer-stat"><strong>${props}</strong>attributes</div>
+        <div class="layer-stat"><strong>${types||'—'}</strong>geometry</div>
+      </div></div>`;
+  }).join('');
+  updateDbPreview();
+}
+
+function setSev(el) {
+  document.querySelectorAll('.sev-opt').forEach(o=>{o.className='sev-opt';});
+  el.classList.add('sel-'+el.dataset.val);
+  selectedSev=el.dataset.val;
+  updateDbPreview();
+}
+
+// ── AI CONFIG ─────────────────────────────────────────────────────────────────
+function setPreset(btn, endpoint, model, provider) {
+  document.querySelectorAll('.model-preset').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); currentProvider=provider;
+  if(endpoint) document.getElementById('ai-endpoint').value=endpoint;
+  if(model)    document.getElementById('ai-model').value=model;
+  const saved=localStorage.getItem('cap_api_key_'+provider)||'';
+  document.getElementById('ai-key').value=saved;
+}
+
+// ── GENERATE ──────────────────────────────────────────────────────────────────
+async function generate() {
+  if (!selectedSev) { alert('Please select a severity level.'); return; }
+  const apiKey   = document.getElementById('ai-key').value.trim();
+  const endpoint = document.getElementById('ai-endpoint').value.trim();
+  const model    = document.getElementById('ai-model').value.trim();
+  if (!apiKey)   { alert('Please enter an API key.'); return; }
+  if (!endpoint || !model) { alert('Please set API endpoint and model name.'); return; }
+
+  localStorage.setItem('cap_api_key', apiKey);
+  localStorage.setItem('cap_api_key_'+currentProvider, apiKey);
+
+  const hazardId   = document.getElementById('hazardType').value;
+  const hazardLabel = document.getElementById('hazardType').selectedOptions[0].text;
+  const authorityId = document.getElementById('authorityLevel').value;
+  const ctx         = document.getElementById('extraCtx').value;
+  const urgMap      = {extreme:'Immediate',severe:'Expected',moderate:'Future',minor:'Future'};
+
+  // Build CSV from included layers
+  const included=lastResults.filter((r,i)=>{
+    const btn=document.getElementById('inc_'+i);
+    return btn&&btn.classList.contains('on')&&r.features?.length;
+  });
+  if (!included.length) { alert('No layers with features included.'); return; }
+
+  const csvParts=included.map(r=>{
+    const headers=[...new Set(r.features.flatMap(f=>Object.keys(f.properties||{})))];
+    const rows=r.features.slice(0,40).map(f=>{
+      const p=f.properties||{};
+      return headers.map(h=>{const v=String(p[h]??'');return v.includes(',')?'"'+v+'"':v;}).join(',');
+    });
+    return '# Layer: '+r.source.name+'\n'+headers.join(',')+'\n'+rows.join('\n');
+  }).join('\n\n');
+
+  // Query library
+  const libMsgs=queryLibrary(hazardId, selectedSev, authorityId==='auto'?null:authorityId);
+  const libBySector={};
+  libMsgs.forEach(m=>{
+    if(!libBySector[m.sector_id]) libBySector[m.sector_id]=[];
+    libBySector[m.sector_id].push(m);
+  });
+  const libSectorsList=Object.keys(libBySector).map(id=>({
+    id, label:libBySector[id][0].sector_label,
+    messages:libBySector[id].map(m=>({
+      text:m.message_text,
+      instruction:m.cap_instruction,
+      audience:m.cap_audience,
+      theme:m.theme_id
+    }))
+  }));
+
+  const libSection = libSectorsList.length
+    ? `\n\nPRE-VALIDATED LIBRARY MESSAGES (from early action library — ${selectedSev} ${hazardLabel}):\n` +
+      libSectorsList.map(s =>
+        `\nSector: ${s.label}\n` +
+        s.messages.map((m,i) => `  [${i+1}] ${m.text}${m.instruction?'\n  CAP instruction: '+m.instruction:''}`).join('\n')
+      ).join('\n')
+    : '\n\nNo library messages found for this hazard/severity combination.';
+
+  const authorityNote = authorityId==='auto'
+    ? 'Infer the appropriate authority level (National/Regional/Local/Individual) from the GIS data scale and feature types.'
+    : 'Authority level: '+['nat','reg','loc','ind'].indexOf(authorityId)>=0?document.getElementById('authorityLevel').selectedOptions[0].text:authorityId;
+
+  const prompt=`You are an expert emergency communications specialist drafting CAP (Common Alerting Protocol) alert descriptions.
+
+HAZARD: ${hazardLabel}
+SEVERITY: ${selectedSev} (CAP urgency: ${urgMap[selectedSev]})
+AUTHORITY: ${authorityNote}
+ADDITIONAL CONTEXT: ${ctx||'None.'}
+
+GIS IMPACT DATA (CSV from polygon query):
+${csvParts}
+${libSection}
+
+INSTRUCTIONS:
+1. Read the GIS layers to understand what infrastructure/populations are at risk.
+2. For each relevant sector, produce a CAP description that incorporates specific data from the GIS layers (named facilities, counts, vulnerability factors).
+3. CRITICALLY — for each sector output, indicate the source:
+   - "library": the pre-validated library message is used with minimal or no adaptation — only slot in place names or counts from the GIS data
+   - "contextualised": a library message exists and has been meaningfully adapted with specific local data from the GIS layers
+   - "synthesised": no library message exists for this sector — generated from GIS data alone
+4. Where library messages exist, USE THEM as the foundation. Do not ignore them.
+5. Where no library message exists, generate appropriate content from the GIS data.
+6. ${authorityId==='auto'?'Infer and state the authority level in each sector audience field.':'Target authority level: '+document.getElementById('authorityLevel').selectedOptions[0].text}
+
+Respond ONLY with valid JSON, no markdown fences:
+{
+  "layerType": "brief description of GIS layers",
+  "impactSummary": "1-2 sentence overall impact summary",
+  "authorityInferred": "stated authority level if auto-inferred",
+  "sectors": [
+    {
+      "name": "sector name",
+      "sector_id": "one of: gov|edu|hlt|log|trn|tel|fsa|com",
+      "audience": "specific audience",
+      "source": "library|contextualised|synthesised",
+      "headline": "CAP headline max 120 chars",
+      "description": "CAP description 3-5 sentences",
+      "library_messages_used": ["exact message text if library or contextualised, else null"],
+      "keyFacts": ["fact1", "fact2"]
+    }
+  ]
+}`;
+
+  goStep(3);
+  document.getElementById('loadBar').style.display='flex';
+  document.getElementById('resultsWrap').style.display='none';
+  document.getElementById('errorBar').style.display='none';
+  document.getElementById('loadTxt').textContent = libMsgs.length
+    ? 'Grounding against '+libMsgs.length+' library messages, then contextualising with local data…'
+    : 'No library match — synthesising from GIS data…';
+
+  try {
+    let responseText='';
+    if (currentProvider==='anthropic') {
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model,max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+      if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error '+res.status);}
+      const data=await res.json();
+      responseText=(data.content||[]).map(b=>b.text||'').join('');
+    } else {
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+apiKey},body:JSON.stringify({model,max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+      if(!res.ok){const e=await res.json();throw new Error(e.error?.message||'API error '+res.status);}
+      const data=await res.json();
+      responseText=data.choices?.[0]?.message?.content||'';
+    }
+    const parsed=JSON.parse(responseText.replace(/```json|```/g,'').trim());
+    sectors=parsed.sectors;
+    renderCAPResults(parsed, hazardLabel);
+  } catch(err) {
+    document.getElementById('loadBar').style.display='none';
+    const eb=document.getElementById('errorBar'); eb.style.display='block'; eb.textContent='Error: '+err.message;
+    console.error(err);
+  }
+}
+
+// ── RENDER CAP RESULTS ────────────────────────────────────────────────────────
+const SEV_COLORS={extreme:'#f85149',severe:'#e3704a',moderate:'#d29922',minor:'#3fb950'};
+const SOURCE_TAGS={
+  library:     '<span class="source-tag library"><span class="source-tag-dot"></span>Library</span>',
+  contextualised: '<span class="source-tag contextual"><span class="source-tag-dot"></span>Contextualised</span>',
+  synthesised: '<span class="source-tag synthesised"><span class="source-tag-dot"></span>Synthesised</span>'
+};
+
+function renderCAPResults(parsed, hazardLabel) {
+  document.getElementById('loadBar').style.display='none';
+  document.getElementById('resultsWrap').style.display='block';
+  const sevColor=SEV_COLORS[selectedSev]||'#7d8590';
+  document.getElementById('hazardBadge').innerHTML='<span class="hazard-dot" style="background:'+sevColor+'"></span>'+hazardLabel+' · '+selectedSev+(parsed.authorityInferred?' · '+parsed.authorityInferred:'');
+  document.getElementById('hazardBadge').style.borderColor=sevColor+'44';
+  document.getElementById('sectorCount').textContent=parsed.sectors.length+' sector'+(parsed.sectors.length!==1?'s':'')+' · '+parsed.layerType;
+  document.getElementById('summaryText').textContent=parsed.impactSummary;
+
+  document.getElementById('sectorCards').innerHTML=parsed.sectors.map((s,i)=>{
+    const tag=SOURCE_TAGS[s.source]||SOURCE_TAGS.synthesised;
+    const facts=(s.keyFacts||[]).map(f=>'<span class="fact-chip">'+f+'</span>').join('');
+    const libMsgsUsed=(s.library_messages_used||[]).filter(Boolean);
+    const libBlock = (s.source==='library'||s.source==='contextualised') && libMsgsUsed.length
+      ? '<div class="library-block"><div class="library-block-label">Library messages used</div>'+
+        libMsgsUsed.map(m=>'<div class="library-msg">'+m+'</div>').join('')+'</div>'
+      : '';
+    return '<div class="sector-card">'+
+      '<div class="sector-card-head"><div><div class="sector-name">'+s.name+'</div><div class="sector-audience">'+s.audience+'</div></div>'+
+      '<button class="copy-btn" onclick="copyBoth(this,'+i+')">Copy</button></div>'+
+      '<div class="sector-card-body">'+
+      tag+
+      '<div class="headline-block"><div class="cap-ref">&lt;headline&gt;</div><div class="headline-text" id="hl_'+i+'">'+s.headline+'</div></div>'+
+      '<div><div class="cap-ref">&lt;description&gt;</div><div class="desc-text" id="desc_'+i+'">'+s.description+'</div></div>'+
+      libBlock+
+      (facts?'<div class="facts-row">'+facts+'</div>':'')+
+      '</div></div>';
+  }).join('');
+}
+
+function copyBoth(btn,i) {
+  const hl=document.getElementById('hl_'+i)?.textContent||'';
+  const desc=document.getElementById('desc_'+i)?.textContent||'';
+  navigator.clipboard.writeText('HEADLINE:\n'+hl+'\n\nDESCRIPTION:\n'+desc).then(()=>{
+    btn.textContent='Copied ✓'; btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied');},2000);
+  });
+}
+
+function downloadTxt() {
+  const hazardLabel=document.getElementById('hazardType').selectedOptions[0].text;
+  const lines=['CAP DESCRIPTION BLOCKS','Generated: '+new Date().toUTCString(),'Hazard: '+hazardLabel+' — '+selectedSev,'','─'.repeat(60),''];
+  sectors.forEach((s,i)=>{
+    const hl=document.getElementById('hl_'+i)?.textContent||s.headline;
+    const desc=document.getElementById('desc_'+i)?.textContent||s.description;
+    const sourceLabel={library:'LIBRARY',contextualised:'CONTEXTUALISED',synthesised:'SYNTHESISED'}[s.source]||'?';
+    lines.push('SECTOR: '+s.name+' ['+sourceLabel+']','AUDIENCE: '+s.audience,'','<headline>',hl,'','<description>',desc,'','─'.repeat(60),'');
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain'}));
+  a.download='cap-descriptions-'+Date.now()+'.txt'; a.click();
+}
+
+// ── DRAG & DROP (GIS files) ───────────────────────────────────────────────────
+document.addEventListener('dragover',e=>{
+  // Only show GIS overlay if not dragging over the settings panel db zone
+  if(!document.getElementById('settings-panel').classList.contains('open')) {
+    e.preventDefault(); document.getElementById('drop-overlay').classList.add('visible');
+  }
+});
+document.addEventListener('dragleave',e=>{if(!e.relatedTarget) document.getElementById('drop-overlay').classList.remove('visible');});
+document.addEventListener('drop',async e=>{
+  e.preventDefault(); document.getElementById('drop-overlay').classList.remove('visible');
+  const file=e.dataTransfer.files[0]; if(!file) return;
+  // If .db file dropped on main area, route to library loader
+  if(file.name.endsWith('.db')) { loadLibraryDB(await file.arrayBuffer()); return; }
+  const name=file.name.replace(/\.[^.]+$/,'');
+  setStatus('loading','Loading '+name+'…');
+  try {
+    const raw=file.name.endsWith('.zip')?normalise(await shp(await file.arrayBuffer())):normalise(JSON.parse(await file.text()));
+    sources.push({id:'s'+Date.now(),name,type:file.name.endsWith('.zip')?'shp':'geojson',active:true,url:null,raw});
+    renderSources(); setStatus('ready','Added '+name);
+    if(currentPolygon) runQuery(currentPolygon);
+  } catch(e){setStatus('error','Failed: '+e.message);}
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderSources();
+
+</script>
+</body>
+</html>
