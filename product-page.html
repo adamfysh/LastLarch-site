@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARIA — Last Larch</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #1a1a18;
+  --ink2: #3a3a36;
+  --ink3: #7a7a72;
+  --paper: #f7f4ee;
+  --paper2: #eeebe3;
+  --paper3: #e4e0d6;
+  --gold: #b8860b;
+  --gold-light: rgba(184,134,11,0.12);
+  --green: #1a5c30;
+  --green-light: rgba(26,92,48,0.1);
+  --red: #8b1a1a;
+  --purple: #4a2060;
+  --purple-light: rgba(74,32,96,0.1);
+  --serif: 'Playfair Display', serif;
+  --sans: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; font-size: 16px; line-height: 1.7; }
+
+/* ── HEADER ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--paper3);
+  padding: 16px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo { font-family: var(--serif); font-size: 18px; font-weight: 700; color: var(--ink); text-decoration: none; letter-spacing: -0.01em; }
+.nav-logo span { color: var(--gold); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 13px; color: var(--ink3); text-decoration: none; font-family: var(--mono); letter-spacing: 0.06em; transition: color 0.15s; }
+.nav-links a:hover { color: var(--ink); }
+.nav-cta { font-size: 13px; font-family: var(--mono); padding: 8px 18px; border: 1px solid var(--ink); border-radius: 2px; color: var(--ink); text-decoration: none; transition: all 0.15s; }
+.nav-cta:hover { background: var(--ink); color: var(--paper); }
+
+/* ── HERO ── */
+.hero {
+  max-width: 1100px; margin: 0 auto;
+  padding: 96px 48px 80px;
+  display: grid; grid-template-columns: 1fr 420px; gap: 80px; align-items: center;
+}
+.hero-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+.hero-title { font-family: var(--serif); font-size: clamp(42px, 5vw, 62px); font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 20px; }
+.hero-title em { font-style: italic; font-weight: 400; color: var(--gold); }
+.hero-sub { font-size: 17px; color: var(--ink2); line-height: 1.75; margin-bottom: 36px; max-width: 480px; }
+.hero-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 36px; }
+.badge { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; padding: 5px 12px; border-radius: 20px; }
+.badge-green  { background: var(--green-light);  color: var(--green);  border: 1px solid rgba(26,92,48,0.25);  }
+.badge-gold   { background: var(--gold-light);   color: var(--gold);   border: 1px solid rgba(184,134,11,0.3); }
+.badge-plain  { background: var(--paper2);       color: var(--ink3);   border: 1px solid var(--paper3);        }
+.hero-actions { display: flex; gap: 14px; align-items: center; }
+.btn-primary { display: inline-block; padding: 13px 28px; background: var(--ink); color: var(--paper); font-family: var(--sans); font-size: 14px; font-weight: 500; text-decoration: none; border-radius: 3px; transition: all 0.15s; }
+.btn-primary:hover { background: var(--ink2); }
+.btn-ghost { display: inline-block; padding: 12px 22px; border: 1px solid var(--paper3); color: var(--ink2); font-family: var(--sans); font-size: 14px; text-decoration: none; border-radius: 3px; transition: all 0.15s; }
+.btn-ghost:hover { border-color: var(--ink3); color: var(--ink); }
+
+/* Hero graphic */
+.hero-graphic {
+  background: #0d1117;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+  aspect-ratio: 4/3;
+  position: relative;
+}
+.hero-graphic svg { width: 100%; height: 100%; }
+
+/* ── DIVIDER ── */
+.divider { max-width: 1100px; margin: 0 auto; padding: 0 48px; }
+.divider hr { border: none; border-top: 1px solid var(--paper3); }
+
+/* ── SECTIONS ── */
+section { max-width: 1100px; margin: 0 auto; padding: 80px 48px; }
+.section-eyebrow { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; }
+.section-title { font-family: var(--serif); font-size: clamp(28px, 3vw, 38px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 18px; }
+.section-sub { font-size: 16px; color: var(--ink2); max-width: 600px; line-height: 1.75; margin-bottom: 48px; }
+
+/* ── PROBLEM ── */
+.problem-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.problem-card { background: var(--paper2); border: 1px solid var(--paper3); border-radius: 6px; padding: 28px 24px; }
+.problem-num { font-family: var(--mono); font-size: 11px; color: var(--gold); letter-spacing: 0.1em; margin-bottom: 12px; }
+.problem-title { font-family: var(--serif); font-size: 18px; font-weight: 700; margin-bottom: 10px; line-height: 1.3; }
+.problem-text { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+
+/* ── HOW IT WORKS ── */
+.steps-list { display: flex; flex-direction: column; gap: 0; }
+.step-item { display: grid; grid-template-columns: 64px 1fr; gap: 24px; padding: 32px 0; border-bottom: 1px solid var(--paper3); }
+.step-item:last-child { border-bottom: none; }
+.step-num-big { font-family: var(--serif); font-size: 48px; font-weight: 700; color: var(--paper3); line-height: 1; padding-top: 4px; }
+.step-content {}
+.step-title { font-family: var(--serif); font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.step-desc { font-size: 15px; color: var(--ink2); line-height: 1.75; margin-bottom: 14px; }
+.step-detail { font-size: 13px; color: var(--ink3); font-family: var(--mono); line-height: 1.8; padding: 12px 16px; background: var(--paper2); border-left: 2px solid var(--paper3); border-radius: 0 4px 4px 0; }
+
+/* ── LIBRARY SECTION ── */
+.library-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+.library-explain { }
+.library-tags-demo { background: #0d1117; border-radius: 8px; padding: 28px; border: 1px solid rgba(255,255,255,0.06); }
+.lib-tag { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-family: var(--mono); font-weight: 500; letter-spacing: 0.06em; padding: 6px 12px; border-radius: 4px; margin-bottom: 10px; display: flex; width: fit-content; }
+.lib-tag-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+.lib-tag.library     { background: rgba(63,185,80,0.12);   color: #3fb950; border: 1px solid rgba(63,185,80,0.3);   }
+.lib-tag.contextual  { background: rgba(240,165,0,0.12);   color: #f0a500; border: 1px solid rgba(240,165,0,0.3);   }
+.lib-tag.synthesised { background: rgba(188,140,255,0.12); color: #bc8cff; border: 1px solid rgba(188,140,255,0.3); }
+.lib-example { margin-top: 8px; padding: 10px 14px; border-radius: 4px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); font-size: 12px; color: rgba(230,237,243,0.7); line-height: 1.65; font-family: var(--sans); font-weight: 300; }
+.lib-example + .lib-tag { margin-top: 24px; }
+
+/* ── PRIVACY SECTION ── */
+.privacy-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+.privacy-card { padding: 28px 24px; background: var(--paper2); border: 1px solid var(--paper3); border-radius: 6px; }
+.privacy-icon { font-size: 24px; margin-bottom: 14px; }
+.privacy-title { font-family: var(--serif); font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.privacy-text { font-size: 14px; color: var(--ink2); line-height: 1.7; }
+
+/* ── FOR WHOM ── */
+.audience-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+.audience-card { display: flex; gap: 18px; padding: 24px; background: var(--paper2); border: 1px solid var(--paper3); border-radius: 6px; align-items: flex-start; }
+.audience-mark { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; background: var(--gold-light); }
+.audience-title { font-weight: 500; font-size: 15px; margin-bottom: 5px; }
+.audience-text  { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+
+/* ── TECH ── */
+.tech-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; }
+.tech-card { padding: 20px; background: var(--paper2); border: 1px solid var(--paper3); border-radius: 6px; text-align: center; }
+.tech-name { font-family: var(--mono); font-size: 12px; color: var(--gold); letter-spacing: 0.08em; margin-bottom: 6px; }
+.tech-desc { font-size: 12px; color: var(--ink3); line-height: 1.6; }
+
+/* ── CTA ── */
+.cta-block { background: var(--ink); border-radius: 8px; padding: 60px 64px; display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; }
+.cta-title { font-family: var(--serif); font-size: 32px; font-weight: 700; color: var(--paper); margin-bottom: 10px; }
+.cta-sub { font-size: 15px; color: rgba(247,244,238,0.6); line-height: 1.65; }
+.cta-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.btn-white { display: inline-block; padding: 13px 28px; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 14px; font-weight: 500; text-decoration: none; border-radius: 3px; white-space: nowrap; transition: all 0.15s; }
+.btn-white:hover { background: #ece9e2; }
+.btn-ghost-white { display: inline-block; padding: 12px 22px; border: 1px solid rgba(247,244,238,0.2); color: rgba(247,244,238,0.7); font-family: var(--sans); font-size: 14px; text-decoration: none; border-radius: 3px; white-space: nowrap; transition: all 0.15s; }
+.btn-ghost-white:hover { border-color: rgba(247,244,238,0.5); color: var(--paper); }
+
+/* ── FOOTER ── */
+footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex; justify-content: space-between; align-items: center; }
+.footer-logo { font-family: var(--serif); font-size: 16px; font-weight: 700; color: var(--ink); }
+.footer-logo span { color: var(--gold); }
+.footer-text { font-size: 12px; color: var(--ink3); font-family: var(--mono); }
+
+/* ── RESPONSIVE ── */
+@media (max-width:900px) {
+  .hero { grid-template-columns: 1fr; padding: 60px 24px; gap: 48px; }
+  .hero-graphic { display: none; }
+  .problem-grid, .privacy-row, .tech-grid { grid-template-columns: 1fr 1fr; }
+  .library-grid, .cta-block { grid-template-columns: 1fr; }
+  .cta-actions { align-items: flex-start; }
+  section { padding: 60px 24px; }
+  nav { padding: 14px 24px; }
+  .nav-links { display: none; }
+  footer { flex-direction: column; gap: 12px; text-align: center; padding: 24px; }
+}
+@media (max-width:600px) {
+  .problem-grid, .privacy-row, .tech-grid, .audience-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Last <span>Larch</span></a>
+  <div class="nav-links">
+    <a href="#how-it-works">How it works</a>
+    <a href="#library">Library</a>
+    <a href="#aria-lex">ARIA-Lex</a>
+    <a href="#privacy">Privacy</a>
+    <a href="#who">Who it's for</a>
+  </div>
+  <a href="#download" class="nav-cta">Get the tool →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div>
+    <div class="hero-eyebrow">Last Larch · Open source tool</div>
+    <h1 class="hero-title">ARIA<br><em>by Last Larch</em></h1>
+    <p class="hero-sub">A free, browser-based tool that helps national authorities query their own GIS data within an impact polygon, then generate sector-specific, library-grounded <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;description&gt;</code> text for Common Alerting Protocol warnings.</p>
+    <div class="hero-badges">
+      <span class="badge badge-green">Early Warning Systems</span>
+      <span class="badge badge-gold">Common Alerting Protocol</span>
+      <span class="badge badge-plain">No server required</span>
+      <span class="badge badge-plain">Your data stays local</span>
+      <span class="badge badge-plain">Any AI model</span>
+    </div>
+    <div class="hero-actions">
+      <a href="#download" class="btn-primary">Download free →</a>
+      <a href="#how-it-works" class="btn-ghost">See how it works</a>
+    </div>
+  </div>
+  <div class="hero-graphic">
+    <svg viewBox="0 0 420 315" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="420" height="315" fill="#0d1117"/>
+      <defs>
+        <pattern id="g" width="21" height="21" patternUnits="userSpaceOnUse">
+          <path d="M 21 0 L 0 0 0 21" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="315" fill="url(#g)"/>
+      <!-- Country outlines -->
+      <path d="M60 130 Q90 115 130 125 Q170 110 185 135 Q200 155 185 180 Q165 205 140 210 Q110 218 90 195 Q65 175 60 155 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+      <path d="M150 70 Q190 55 230 72 Q270 82 285 118 Q300 148 268 168 Q242 188 210 180 Q178 172 158 150 Q132 128 150 100 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+      <path d="M220 175 Q262 162 300 178 Q336 195 342 232 Q348 268 318 288 Q292 308 256 298 Q214 288 198 260 Q182 234 220 205 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+      <!-- Polygon -->
+      <path d="M148 143 L232 120 L292 172 L278 245 L204 272 L128 240 Z" fill="rgba(240,165,0,0.05)" stroke="#f0a500" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <!-- Points inside -->
+      <circle cx="175" cy="172" r="4" fill="#f0a500" opacity="0.9"/>
+      <circle cx="175" cy="172" r="8" fill="none" stroke="#f0a500" stroke-width="0.8" opacity="0.3"/>
+      <circle cx="212" cy="150" r="4" fill="#3fb950" opacity="0.9"/>
+      <circle cx="212" cy="150" r="8" fill="none" stroke="#3fb950" stroke-width="0.8" opacity="0.3"/>
+      <circle cx="245" cy="195" r="4" fill="#f0a500" opacity="0.9"/>
+      <circle cx="225" cy="225" r="4" fill="#58a6ff" opacity="0.9"/>
+      <circle cx="185" cy="215" r="4" fill="#f0a500" opacity="0.9"/>
+      <circle cx="255" cy="160" r="3.5" fill="#3fb950" opacity="0.85"/>
+      <circle cx="165" cy="200" r="3.5" fill="#f0a500" opacity="0.85"/>
+      <circle cx="240" cy="245" r="3" fill="#f0a500" opacity="0.75"/>
+      <!-- Points outside (dim) -->
+      <circle cx="90" cy="150" r="2.5" fill="rgba(255,255,255,0.12)"/>
+      <circle cx="320" cy="135" r="2.5" fill="rgba(255,255,255,0.12)"/>
+      <circle cx="110" cy="255" r="2.5" fill="rgba(255,255,255,0.12)"/>
+      <circle cx="350" cy="230" r="2.5" fill="rgba(255,255,255,0.12)"/>
+      <!-- Badges -->
+      <rect x="262" y="130" width="68" height="16" rx="2.5" fill="rgba(63,185,80,0.15)" stroke="rgba(63,185,80,0.4)" stroke-width="0.7"/>
+      <text x="267" y="142" font-family="DM Mono,monospace" font-size="7.5" fill="#3fb950" letter-spacing="0.08em">LIBRARY</text>
+      <rect x="248" y="260" width="90" height="16" rx="2.5" fill="rgba(240,165,0,0.15)" stroke="rgba(240,165,0,0.4)" stroke-width="0.7"/>
+      <text x="253" y="272" font-family="DM Mono,monospace" font-size="7.5" fill="#f0a500" letter-spacing="0.08em">CONTEXTUALISED</text>
+      <rect x="68" y="172" width="82" height="16" rx="2.5" fill="rgba(188,140,255,0.15)" stroke="rgba(188,140,255,0.4)" stroke-width="0.7"/>
+      <text x="73" y="184" font-family="DM Mono,monospace" font-size="7.5" fill="#bc8cff" letter-spacing="0.08em">SYNTHESISED</text>
+      <!-- Fade edges -->
+      <defs>
+        <linearGradient id="ft" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="15%" stop-color="transparent"/><stop offset="85%" stop-color="transparent"/><stop offset="100%" stop-color="#0d1117"/></linearGradient>
+      </defs>
+      <rect width="420" height="315" fill="url(#ft)"/>
+    </svg>
+  </div>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- PROBLEM -->
+<section>
+  <div class="section-eyebrow">The challenge</div>
+  <h2 class="section-title">Early warnings fail when language doesn't reach the right people</h2>
+  <p class="section-sub">Countries implementing Early Warning Systems (EWS) under the UN EWEA initiative face a common bottleneck: converting meteorological data into actionable, sector-specific alert language — fast, consistently, and at scale.</p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="problem-num">01</div>
+      <div class="problem-title">Generic language doesn't move people</div>
+      <p class="problem-text">A flood warning that doesn't mention the school, the clinic, or the road your community depends on doesn't produce action. Specificity saves lives.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">02</div>
+      <div class="problem-title">Drafting under pressure is error-prone</div>
+      <p class="problem-text">Warning officers work under extreme time pressure. Without structured support, alert language is inconsistent, incomplete, or misaligned with CAP standards.</p>
+    </div>
+    <div class="problem-card">
+      <div class="problem-num">03</div>
+      <div class="problem-title">Data is there — connecting it isn't easy</div>
+      <p class="problem-text">National authorities often have GIS data on infrastructure, schools and health facilities — but no fast way to connect that data to the impact footprint of an incoming hazard.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- HOW IT WORKS -->
+<section id="how-it-works">
+  <div class="section-eyebrow">How it works</div>
+  <h2 class="section-title">Three steps from polygon to publish-ready alert language</h2>
+  <p class="section-sub">The tool runs entirely in your browser. No account, no server, no data leaving your machine unless you choose to use an AI API.</p>
+
+  <div class="steps-list">
+    <div class="step-item">
+      <div class="step-num-big">1</div>
+      <div class="step-content">
+        <div class="step-title">Query your impact area</div>
+        <p class="step-desc">Load your own GIS data sources — local files, ArcGIS REST services, WFS endpoints, or shapefiles. Draw a polygon on the map (or paste coordinates from a met service warning), and the tool instantly queries every layer to find what's inside: schools, health facilities, roads, population centres, critical infrastructure.</p>
+        <div class="step-detail">
+          Supports: GeoJSON · Shapefile (.zip) · ArcGIS REST API · ArcGIS Web Map URLs · WFS endpoints · Paste polygon (lat/lng pairs, GeoJSON, WKT)
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num-big">2</div>
+      <div class="step-content">
+        <div class="step-title">Review and configure</div>
+        <p class="step-desc">Select which layers to include in the alert. Set the hazard type, severity, and authority level — or let the tool infer the appropriate level from your data. Optionally load your organisation's pre-validated early action library (.db file) to ground the output in approved language.</p>
+        <div class="step-detail">
+          Configure: hazard type · severity (Extreme / Severe / Moderate / Minor) · authority level (National / Regional / Local / Individual, or auto-inferred) · AI model of your choice
+        </div>
+      </div>
+    </div>
+    <div class="step-item">
+      <div class="step-num-big">3</div>
+      <div class="step-content">
+        <div class="step-title">Generate sector-specific CAP descriptions</div>
+        <p class="step-desc">The tool queries your library for matching pre-validated messages, then passes them — alongside your GIS impact data — to the AI model of your choice. It produces sector-specific <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;headline&gt;</code> and <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;description&gt;</code> blocks ready to paste into your CAP editor, each tagged by source.</p>
+        <div class="step-detail">
+          Output: copy individual sectors · download all as .txt · each block tagged Library / Contextualised / Synthesised
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- LIBRARY -->
+<section id="library">
+  <div class="library-grid">
+    <div class="library-explain">
+      <div class="section-eyebrow">The early action library</div>
+      <h2 class="section-title">Your validated language. The AI fills in the specifics.</h2>
+      <p class="section-sub" style="margin-bottom:24px">Load a SQLite library of pre-validated early action messages — organised by hazard, sector, severity, and authority level. The AI uses these as its foundation rather than generating from scratch, then layers in the specific names, counts, and conditions from your GIS data.</p>
+      <p style="font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:16px">Every output block is tagged so you always know what you're working with:</p>
+      <ul style="font-size:14px;color:var(--ink2);line-height:1.9;padding-left:20px;margin-bottom:24px">
+        <li><strong>Library</strong> — your validated message, used as written, with local details slotted in</li>
+        <li><strong>Contextualised</strong> — your validated message, meaningfully adapted with specific local data from the polygon</li>
+        <li><strong>Synthesised</strong> — no library match existed; generated from your GIS data alone</li>
+      </ul>
+      <p style="font-size:13px;color:var(--ink3);font-family:var(--mono);line-height:1.7;padding:12px 16px;background:var(--paper2);border-left:2px solid var(--paper3);border-radius:0 4px 4px 0">The library file is a standard SQLite .db — you own it, you control it, and it never leaves your machine. Last Larch provides a seed library covering 8 hazard types across 8 sectors.</p>
+    </div>
+    <div>
+      <div class="library-tags-demo">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(125,133,144,0.8);margin-bottom:20px">Example output tags</div>
+
+        <div class="lib-tag library"><span class="lib-tag-dot"></span>Library</div>
+        <div class="lib-example">"Activate school flood emergency plan; brief all staff on roles, flood evacuation procedures, and parent communication protocol."</div>
+
+        <div class="lib-tag contextual"><span class="lib-tag-dot"></span>Contextualised</div>
+        <div class="lib-example">"Activate flood emergency plans at all 14 schools in the Kigali polygon, including Remera Primary and GS Kimironko (boarding). Brief staff on evacuation routes and parent communication — 3,240 students are at risk."</div>
+
+        <div class="lib-tag synthesised"><span class="lib-tag-dot"></span>Synthesised</div>
+        <div class="lib-example">"No library message matched this sector for this hazard and severity. This description was generated directly from GIS data and should be reviewed before publication."</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- PRIVACY -->
+<section id="privacy">
+  <div class="section-eyebrow">Privacy &amp; security</div>
+  <h2 class="section-title">Your data never leaves your machine</h2>
+  <p class="section-sub">For national authorities handling sensitive infrastructure data, data sovereignty is non-negotiable. ARIA is built around that principle from the ground up.</p>
+  <div class="privacy-row">
+    <div class="privacy-card">
+      <div class="privacy-icon">📁</div>
+      <div class="privacy-title">Local files stay local</div>
+      <p class="privacy-text">Shapefiles, GeoJSON files, and your .db library are loaded directly into your browser's memory. They are never uploaded to any server. Close the tab and they're gone.</p>
+    </div>
+    <div class="privacy-card">
+      <div class="privacy-icon">🔑</div>
+      <div class="privacy-title">You choose your AI provider</div>
+      <p class="privacy-text">Connect any OpenAI-compatible model — Claude, GPT-4o, Gemini, or a self-hosted model via Ollama. Your API key is stored only in your browser's localStorage. Last Larch never sees it.</p>
+    </div>
+    <div class="privacy-card">
+      <div class="privacy-icon">📄</div>
+      <div class="privacy-title">One file. No install.</div>
+      <p class="privacy-text">The entire tool is a single HTML file. No server, no dependencies to install, no account to create. Open it in any modern browser and it works. Share it by attaching it to an email.</p>
+    </div>
+  </div>
+  <p style="font-size:13px;color:var(--ink3);font-family:var(--mono);margin-top:28px;padding:14px 18px;background:var(--paper2);border-radius:4px;border:1px solid var(--paper3)">⚠ Note: When you generate descriptions using an AI API, a summary of your GIS data (feature counts, attribute names, and up to 40 sample rows per layer) is sent to the AI provider you configure. No raw geometry is transmitted. Review your AI provider's data policy if this is a concern.</p>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- WHO IT'S FOR -->
+<section id="who">
+  <div class="section-eyebrow">Who it's for</div>
+  <h2 class="section-title">Built for practitioners, not just technologists</h2>
+  <p class="section-sub">You don't need to be a developer to use this tool. If you can open a browser and load a file, you can produce publish-ready alert language.</p>
+  <div class="audience-grid">
+    <div class="audience-card">
+      <div class="audience-mark">🌦</div>
+      <div>
+        <div class="audience-title">National meteorological services</div>
+        <p class="audience-text">Translate forecast data into structured CAP alerts with sector-specific language — without a developer in the room. Compatible with any CAP editor.</p>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-mark">🏛</div>
+      <div>
+        <div class="audience-title">National disaster management authorities</div>
+        <p class="audience-text">Query your own infrastructure data against any incoming hazard polygon. Generate authority-level appropriate messaging for education, health, logistics, and more.</p>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-mark">🌍</div>
+      <div>
+        <div class="audience-title">UN agencies &amp; regional bodies</div>
+        <p class="audience-text">Support country offices in building and maintaining validated early action libraries. The .db format is portable and version-controlled.</p>
+      </div>
+    </div>
+    <div class="audience-card">
+      <div class="audience-mark">🔬</div>
+      <div>
+        <div class="audience-title">EWS researchers &amp; implementers</div>
+        <p class="audience-text">Prototype, evaluate, and iterate on impact-based forecasting workflows. All outputs are traceable — you always know whether language came from the library or was generated.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- TECH STACK -->
+<section>
+  <div class="section-eyebrow">Under the hood</div>
+  <h2 class="section-title">Built on open standards</h2>
+  <p class="section-sub">No proprietary dependencies. Every component is open source or an open standard.</p>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tech-name">Leaflet + Draw</div>
+      <div class="tech-desc">Interactive map and polygon drawing</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">Turf.js</div>
+      <div class="tech-desc">Spatial operations and polygon intersection</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">shpjs</div>
+      <div class="tech-desc">In-browser shapefile parsing</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">sql.js</div>
+      <div class="tech-desc">WebAssembly SQLite — reads your .db library in the browser</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">ArcGIS REST</div>
+      <div class="tech-desc">Direct query of FeatureServer and web map layers</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">CAP v1.2</div>
+      <div class="tech-desc">Output structured for the Common Alerting Protocol standard</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">OpenAI-compatible</div>
+      <div class="tech-desc">Works with Claude, GPT-4o, Gemini, or any compatible API</div>
+    </div>
+    <div class="tech-card">
+      <div class="tech-name">SQLite</div>
+      <div class="tech-desc">Portable, version-controlled early action library format</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"><hr></div>
+
+<!-- ARIA-LEX DOWNLOAD -->
+<section id="aria-lex">
+  <div class="section-eyebrow">Seed library</div>
+  <h2 class="section-title">ARIA-Lex — download the early action library</h2>
+  <p class="section-sub">ARIA-Lex is the seed library that ships with ARIA. It contains pre-structured early action messages covering 8 hazard types across 8 sectors, organised by severity and authority level. It's a starting point — designed to be extended, localised, and validated by your organisation.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:36px">
+    <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:6px;padding:28px 24px">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">What's inside</div>
+      <ul style="font-size:14px;color:var(--ink2);line-height:2;padding-left:18px">
+        <li>8 hazard types: Cyclone, Flood, Heatwave, Wildfire, Earthquake, Tsunami, Cold wave, Disease outbreak</li>
+        <li>8 sectors: Government, Education, Health, Logistics, Transportation, Telecommunications, Food &amp; Agriculture, Community</li>
+        <li>4 severity levels × 4 authority levels per combination</li>
+        <li>Standard SQLite format — open in any DB browser or load directly into ARIA</li>
+      </ul>
+    </div>
+    <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:6px;padding:28px 24px">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:14px">How to use it</div>
+      <ol style="font-size:14px;color:var(--ink2);line-height:2;padding-left:18px">
+        <li>Download <code style="font-family:var(--mono);font-size:13px;color:var(--gold)">ARIA-Lex.db</code> below</li>
+        <li>Open ARIA in your browser</li>
+        <li>Click <strong>No library loaded</strong> in the top-right header</li>
+        <li>Drop or browse to <code style="font-family:var(--mono);font-size:13px;color:var(--gold)">ARIA-Lex.db</code></li>
+        <li>The library loads instantly — no server, no account</li>
+      </ol>
+    </div>
+  </div>
+
+  <div style="background:var(--ink);border-radius:6px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:32px">
+    <div>
+      <div style="font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(247,244,238,0.5);margin-bottom:8px">Free download</div>
+      <div style="font-family:var(--serif);font-size:22px;font-weight:700;color:var(--paper);margin-bottom:4px">ARIA-Lex.db</div>
+      <div style="font-size:13px;color:rgba(247,244,238,0.5);font-family:var(--mono)">SQLite · ~924 KB · Seed library v1</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end;flex-shrink:0">
+      <a href="ARIA-Lex.db" download="ARIA-Lex.db" class="btn-white" style="display:inline-block;padding:13px 28px;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:14px;font-weight:500;text-decoration:none;border-radius:3px">↓ Download ARIA-Lex</a>
+      <span style="font-size:12px;color:rgba(247,244,238,0.35);font-family:var(--mono);text-align:right">Provisional seed data · validate before operational use</span>
+    </div>
+  </div>
+</section>
+<section id="download">
+  <div class="cta-block">
+    <div>
+      <div class="cta-title">Free. Open source. Ready to use.</div>
+      <p class="cta-sub">Download the single HTML file, open it in your browser, and start querying your data. No account, no server, no installation. Questions or custom implementations — Last Larch is available for consultancy engagements.</p>
+    </div>
+    <div class="cta-actions">
+      <a href="#" class="btn-white">Download tool →</a>
+      <a href="mailto:fysh@lastlarch.com" class="btn-ghost-white">Talk to Last Larch</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Last <span>Larch</span></div>
+  <div class="footer-text">ARIA · Free &amp; open source · lastlarch.com</div>
+</footer>
+
+</body>
+</html>
