@@ -254,23 +254,23 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
 <!-- PROBLEM -->
 <section>
   <div class="section-eyebrow">The challenge</div>
-  <h2 class="section-title">Early warnings fail when language doesn't reach the right people</h2>
-  <p class="section-sub">Countries implementing Early Warning Systems (EWS) under the UN EWEA initiative face a common bottleneck: converting meteorological data into actionable, sector-specific alert language — fast, consistently, and at scale.</p>
+  <h2 class="section-title">Early warnings fail when warnings are not specific, relevant or clear enough.</h2>
+  <p class="section-sub">Countries implementing Early Warning Systems (EWS) under the EWEA initiative face a common bottleneck: converting observation data into actionable, sector-specific alert language fast enough, consistently and at scale.</p>
   <div class="problem-grid">
     <div class="problem-card">
       <div class="problem-num">01</div>
-      <div class="problem-title">Generic language doesn't move people</div>
-      <p class="problem-text">A flood warning that doesn't mention the school, the clinic, or the road your community depends on doesn't produce action. Specificity saves lives.</p>
+      <div class="problem-title">Generic language does not motivate people</div>
+      <p class="problem-text">A flood warning that fails to mention the school, the clinic, or the road the community depends on does not produce action. Specificity saves lives.</p>
     </div>
     <div class="problem-card">
       <div class="problem-num">02</div>
       <div class="problem-title">Drafting under pressure is error-prone</div>
-      <p class="problem-text">Warning officers work under extreme time pressure. Without structured support, alert language is inconsistent, incomplete, or misaligned with CAP standards.</p>
+      <p class="problem-text">Warning officers work under extreme time pressure. Without structured support, alert language is inconsistent, incomplete, or misaligned with standards.</p>
     </div>
     <div class="problem-card">
       <div class="problem-num">03</div>
-      <div class="problem-title">Data is there — connecting it isn't easy</div>
-      <p class="problem-text">National authorities often have GIS data on infrastructure, schools and health facilities — but no fast way to connect that data to the impact footprint of an incoming hazard.</p>
+      <div class="problem-title">Data is there but connecting it is not easy</div>
+      <p class="problem-text">National authorities often have GIS data on infrastructure, schools and health facilities but often <em>do not have</em> a fast way to connect that data to the impact footprint of an incoming hazard.</p>
     </div>
   </div>
 </section>
@@ -280,15 +280,15 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
 <!-- HOW IT WORKS -->
 <section id="how-it-works">
   <div class="section-eyebrow">How it works</div>
-  <h2 class="section-title">Three steps from polygon to publish-ready alert language</h2>
-  <p class="section-sub">The tool runs entirely in your browser. No account, no server, no data leaving your machine unless you choose to use an AI API.</p>
+  <h2 class="section-title">Three steps from polygon to publication-ready alert language</h2>
+  <p class="section-sub">The tool runs entirely in your browser. No account, no server, no data leaving your machine unless you choose to use an AI API <i>(which is opt-in only).</i></p>
 
   <div class="steps-list">
     <div class="step-item">
       <div class="step-num-big">1</div>
       <div class="step-content">
         <div class="step-title">Query your impact area</div>
-        <p class="step-desc">Load your own GIS data sources — local files, ArcGIS REST services, WFS endpoints, or shapefiles. Draw a polygon on the map (or paste coordinates from a met service warning), and the tool instantly queries every layer to find what's inside: schools, health facilities, roads, population centres, critical infrastructure.</p>
+        <p class="step-desc">Load your own GIS data sources. The system accepts a broad range including local files, ArcGIS REST services, WFS endpoints, or shapefiles. Draw a polygon on the map (or paste coordinates from a met service warning), and the tool instantly queries every layer to find what is inside: schools, health facilities, roads, population centres, critical infrastructure. What is inside comes from the maps <em>you</em> have loaded.</p>
         <div class="step-detail">
           Supports: GeoJSON · Shapefile (.zip) · ArcGIS REST API · ArcGIS Web Map URLs · WFS endpoints · Paste polygon (lat/lng pairs, GeoJSON, WKT)
         </div>
@@ -298,7 +298,7 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
       <div class="step-num-big">2</div>
       <div class="step-content">
         <div class="step-title">Review and configure</div>
-        <p class="step-desc">Select which layers to include in the alert. Set the hazard type, severity, and authority level — or let the tool infer the appropriate level from your data. Optionally load your organisation's pre-validated early action library (.db file) to ground the output in approved language.</p>
+        <p class="step-desc">Select which layers to include in the alert. Set the hazard type, severity, and authority level. Or let the tool infer the appropriate level from your data. Optionally load your organisation's pre-validated early action library (.db file) to ground the output in approved language.</p>
         <div class="step-detail">
           Configure: hazard type · severity (Extreme / Severe / Moderate / Minor) · authority level (National / Regional / Local / Individual, or auto-inferred) · AI model of your choice
         </div>
@@ -307,8 +307,8 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
     <div class="step-item">
       <div class="step-num-big">3</div>
       <div class="step-content">
-        <div class="step-title">Generate sector-specific CAP descriptions</div>
-        <p class="step-desc">The tool queries your library for matching pre-validated messages, then passes them — alongside your GIS impact data — to the AI model of your choice. It produces sector-specific <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;headline&gt;</code> and <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;description&gt;</code> blocks ready to paste into your CAP editor, each tagged by source.</p>
+        <div class="step-title">Generate sector-specific warning messages (aligned to CAP descriptions)</div>
+        <p class="step-desc">The tool queries your library for matching pre-validated messages, then connects them to the GIS impact data from your map layers to the AI model of your choice. It produces sector-specific <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;headline&gt;</code> and <code style="font-family:var(--mono);font-size:14px;color:var(--gold)">&lt;description&gt;</code> blocks ready to paste into your CAP editor, each tagged by source.</p>
         <div class="step-detail">
           Output: copy individual sectors · download all as .txt · each block tagged Library / Contextualised / Synthesised
         </div>
@@ -324,15 +324,15 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
   <div class="library-grid">
     <div class="library-explain">
       <div class="section-eyebrow">The early action library</div>
-      <h2 class="section-title">Your validated language. The AI fills in the specifics.</h2>
-      <p class="section-sub" style="margin-bottom:24px">Load a SQLite library of pre-validated early action messages — organised by hazard, sector, severity, and authority level. The AI uses these as its foundation rather than generating from scratch, then layers in the specific names, counts, and conditions from your GIS data.</p>
+      <h2 class="section-title">Your validated language. AI can help fill in the specifics (if you want).</h2>
+      <p class="section-sub" style="margin-bottom:24px">Load a SQLite library of pre-validated early action messages (organised by hazard, sector, severity, and authority level). The LLM uses these as its foundation rather than generating from scratch, then layers in the specific names, counts, and conditions from your GIS data.</p>
       <p style="font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:16px">Every output block is tagged so you always know what you're working with:</p>
       <ul style="font-size:14px;color:var(--ink2);line-height:1.9;padding-left:20px;margin-bottom:24px">
-        <li><strong>Library</strong> — your validated message, used as written, with local details slotted in</li>
-        <li><strong>Contextualised</strong> — your validated message, meaningfully adapted with specific local data from the polygon</li>
-        <li><strong>Synthesised</strong> — no library match existed; generated from your GIS data alone</li>
+        <li><strong>Library</strong>: Your validated message, used as written, with local details slotted in.</li>
+        <li><strong>Contextualised</strong>: Your validated message, adapted with specific local data from the polygon.</li>
+        <li><strong>Synthesised</strong>: No library match existed; generated from your GIS data alone.</li>
       </ul>
-      <p style="font-size:13px;color:var(--ink3);font-family:var(--mono);line-height:1.7;padding:12px 16px;background:var(--paper2);border-left:2px solid var(--paper3);border-radius:0 4px 4px 0">The library file is a standard SQLite .db — you own it, you control it, and it never leaves your machine. Last Larch provides a seed library covering 8 hazard types across 8 sectors.</p>
+      <p style="font-size:13px;color:var(--ink3);font-family:var(--mono);line-height:1.7;padding:12px 16px;background:var(--paper2);border-left:2px solid var(--paper3);border-radius:0 4px 4px 0">The library file is a standard SQLite .db. You own it, you control it, and it never leaves your machine. Last Larch provides a seed library covering 8 hazard types across 8 sectors.</p>
     </div>
     <div>
       <div class="library-tags-demo">
@@ -360,17 +360,14 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
   <p class="section-sub">For national authorities handling sensitive infrastructure data, data sovereignty is non-negotiable. ARIA is built around that principle from the ground up.</p>
   <div class="privacy-row">
     <div class="privacy-card">
-      <div class="privacy-icon">📁</div>
       <div class="privacy-title">Local files stay local</div>
-      <p class="privacy-text">Shapefiles, GeoJSON files, and your .db library are loaded directly into your browser's memory. They are never uploaded to any server. Close the tab and they're gone.</p>
+      <p class="privacy-text">Shapefiles, GeoJSON files, and your .db library are loaded directly into your browser's memory. They are never uploaded to any server. Close the tab and they are gone.</p>
     </div>
     <div class="privacy-card">
-      <div class="privacy-icon">🔑</div>
-      <div class="privacy-title">You choose your AI provider</div>
-      <p class="privacy-text">Connect any OpenAI-compatible model — Claude, GPT-4o, Gemini, or a self-hosted model via Ollama. Your API key is stored only in your browser's localStorage. Last Larch never sees it.</p>
+      <div class="privacy-title">You choose your AI model</div>
+      <p class="privacy-text">Connect any OpenAI-compatible model (Claude, GPT-4o, Gemini, or a self-hosted model via Ollama). Your API key is stored only in your browser's local storage. Last Larch never sees it.</p>
     </div>
     <div class="privacy-card">
-      <div class="privacy-icon">📄</div>
       <div class="privacy-title">One file. No install.</div>
       <p class="privacy-text">The entire tool is a single HTML file. No server, no dependencies to install, no account to create. Open it in any modern browser and it works. Share it by attaching it to an email.</p>
     </div>
@@ -380,23 +377,23 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
 
 <div class="divider"><hr></div>
 
-<!-- WHO IT'S FOR -->
+<!-- WHO IT IS FOR -->
 <section id="who">
-  <div class="section-eyebrow">Who it's for</div>
+  <div class="section-eyebrow">Who it is for</div>
   <h2 class="section-title">Built for practitioners, not just technologists</h2>
-  <p class="section-sub">You don't need to be a developer to use this tool. If you can open a browser and load a file, you can produce publish-ready alert language.</p>
+  <p class="section-sub">You don't need to be a developer to use this tool. If you can open a browser and load a file, you can produce publication-ready alert language.</p>
   <div class="audience-grid">
     <div class="audience-card">
       <div class="audience-mark">🌦</div>
       <div>
         <div class="audience-title">National meteorological services</div>
-        <p class="audience-text">Translate forecast data into structured CAP alerts with sector-specific language — without a developer in the room. Compatible with any CAP editor.</p>
+        <p class="audience-text">Translate forecast data into structured CAP alerts with sector-specific language without a developer in the room. Compatible with any CAP editor.</p>
       </div>
     </div>
     <div class="audience-card">
       <div class="audience-mark">🏛</div>
       <div>
-        <div class="audience-title">National disaster management authorities</div>
+        <div class="audience-title">National disaster management authorities and line ministries</div>
         <p class="audience-text">Query your own infrastructure data against any incoming hazard polygon. Generate authority-level appropriate messaging for education, health, logistics, and more.</p>
       </div>
     </div>
@@ -411,7 +408,7 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
       <div class="audience-mark">🔬</div>
       <div>
         <div class="audience-title">EWS researchers &amp; implementers</div>
-        <p class="audience-text">Prototype, evaluate, and iterate on impact-based forecasting workflows. All outputs are traceable — you always know whether language came from the library or was generated.</p>
+        <p class="audience-text">Prototype, evaluate, and iterate on impact-based forecasting workflows. All outputs are traceable; you always know whether language came from the library or was generated.</p>
       </div>
     </div>
   </div>
@@ -465,8 +462,8 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
 <!-- ARIA-LEX DOWNLOAD -->
 <section id="aria-lex">
   <div class="section-eyebrow">Seed library</div>
-  <h2 class="section-title">ARIA-Lex — download the early action library</h2>
-  <p class="section-sub">ARIA-Lex is the seed library that ships with ARIA. It contains pre-structured early action messages covering 8 hazard types across 8 sectors, organised by severity and authority level. It's a starting point — designed to be extended, localised, and validated by your organisation.</p>
+  <h2 class="section-title">ARIA-Lex — download the Early Action seed library</h2>
+  <p class="section-sub">ARIA-Lex is the seed library that ships with ARIA. It contains pre-structured early action messages covering 8 hazard types across 8 sectors, organised by severity and authority level. It's a starting point and is designed to be extended, localised, and validated by your organisation.</p>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:36px">
     <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:6px;padding:28px 24px">
@@ -474,8 +471,8 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
       <ul style="font-size:14px;color:var(--ink2);line-height:2;padding-left:18px">
         <li>8 hazard types: Cyclone, Flood, Heatwave, Wildfire, Earthquake, Tsunami, Cold wave, Disease outbreak</li>
         <li>8 sectors: Government, Education, Health, Logistics, Transportation, Telecommunications, Food &amp; Agriculture, Community</li>
-        <li>4 severity levels × 4 authority levels per combination</li>
-        <li>Standard SQLite format — open in any DB browser or load directly into ARIA</li>
+        <li>4 severity levels (aligned to CAP) × 4 authority levels per combination</li>
+        <li>Standard SQLite format: Open in any DB browser or load directly into ARIA</li>
       </ul>
     </div>
     <div style="background:var(--paper2);border:1px solid var(--paper3);border-radius:6px;padding:28px 24px">
