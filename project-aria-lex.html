@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARIA: Alert Risk & Impact Analysis — Last Larch</title>
+    <title>ARIA-Lex | Last Larch</title>
     <link rel="stylesheet" href="last_larch.css">
     <link rel="icon" type="image/png" href="LL Logo 4.png">    
     <style>
@@ -350,16 +350,9 @@
     <!-- Navigation -->
     <nav class="demo-nav">
         <a href="index.html" class="nav-logo">
-    <a href="/" class="nav-logo">
-  <img src="LL Logo 4.png" alt="Last Larch Logo" class="nav-logo-img">
-  Last Larch
-</a>            Last Larch
+            <img src="LL Logo 4.png" alt="Last Larch" style="height:32px; width:auto;">
+            Last Larch
         </a>
-        <ul class="nav-links">
-            <li><a href="about.html">About</a></li>
-            <li class="active"><a href="projects.html">Projects</a></li>
-            <li><a href="blog.html">Blog</a></li>
-        </ul>
         <div class="nav-cta">
             <a href="mailto:fysh@lastlarch.com" class="btn-primary">Contact</a>
         </div>
@@ -403,7 +396,7 @@
     <div class="project-content">
         
         <!-- Hero Image -->
-        <img src="aria_lex_hero.svg" alt="ARIA Dashboard Interface" class="hero-image">
+        <img src="aria_hero.svg" alt="ARIA-Lex" class="hero-image">
         
         <!-- Overview Section -->
         <section class="content-section">
@@ -416,7 +409,7 @@
                   action protocol library that is validated, politically endorsed and institutionally owned. 
                 </p>
                 <p>
-                    This is linked in ARIA, where ussers can draw or import polygons over affected areas and the system 
+                    This is linked in ARIA, where users can draw or import polygons over affected areas and the system 
                     instantly retrieves demographic data, infrastructure information, and exposure 
                     statistics from pre-defined libraries. The data can be automatically connected via ARIA-Lex 
                     into pre-validated warning language that can be ported directly into Common Alerting Protocol (CAP).
@@ -432,7 +425,7 @@
         <!-- Pullquote -->
         <blockquote class="pullquote">
             What once took hours of manual data gathering can now happen in seconds. 
-            Warnings can be contextual, action-oriented and community-focused wihtout sacrificing warning speed.
+            Warnings can be contextual, action-oriented and community-focused without sacrificing warning speed.
         </blockquote>
 
         <!-- Challenge Section -->
@@ -451,12 +444,6 @@
      
             </div>
         </section>
-
-        <!-- Image Grid - 2 Column -->
-        <div class="image-grid-2">
-            <img src="detail-1.png" alt="Polygon selection interface showing affected area">
-            <img src="detail-2.jpg" alt="Generated exposure report with demographic breakdown">
-        </div>
 
         <!-- Key Features -->
         <section class="content-section">
@@ -483,8 +470,8 @@
                 <div class="feature-item">
                     <div class="feature-title">Rich Message Taxonomy</div>
                     <div class="feature-desc">
-                        Messages are divided into two registers: Register A — protective action themes (people-centred, cross-sector) and
-Register B — operational & system continuity themes (sector-specific, technical)
+                        Messages are divided into two registers: Register A, protective action themes (people-centred, cross-sector), and
+Register B, operational and system continuity themes (sector-specific, technical)
 
                     </div>
                 </div>
@@ -504,14 +491,6 @@ Register B — operational & system continuity themes (sector-specific, technica
                 </div>
             </div>
         </section>
-
-        <!-- Full Width Image with Caption -->
-        <div class="image-captioned">
-            <img src="detail-3.jpg" alt="Complete workflow from polygon selection to warning generation" class="image-full">
-            <p class="image-caption">
-                Complete workflow showing polygon selection, data extraction, and automated warning generation
-            </p>
-        </div>
 
         <!-- Technical Implementation -->
         <section class="content-section">
@@ -550,7 +529,7 @@ Register B — operational & system continuity themes (sector-specific, technica
         </tr>
         <tr>
           <td class="id-cell">A2</td>
-          <td class="theme-cell">Protective action — physical safety</td>
+          <td class="theme-cell">Protective action, physical safety</td>
           <td>Evacuation, shelter-in-place, movement restrictions, securing structures. The core "get people out of harm's way" theme. Maps to IFRC PAPE's most fundamental messages.</td>
         </tr>
         <tr>
@@ -653,19 +632,37 @@ Register B — operational & system continuity themes (sector-specific, technica
   </div>
 </div>
 
-
-        <!-- Image Grid - 3 Column -->
-        <div class="image-grid-3">
-            <img src="detail-4.jpg" alt="Dashboard metrics view">
-            <img src="detail-5.jpg" alt="CAP message preview">
-            <img src="detail-6.jpg" alt="Historical analysis comparison">
-        </div>
+        <!-- Download -->
+        <section class="content-section">
+            <h2 class="section-heading">Download</h2>
+            <div class="text-single">
+                <p>ARIA-Lex.db is a standard SQLite file. Open it in ARIA to generate warning language automatically, or open it in any database browser to read, edit, and validate the messages directly.</p>
+            </div>
+            <div class="specs-table">
+                <div class="spec-row">
+                    <div class="spec-label">File</div>
+                    <div class="spec-value">ARIA-Lex.db &middot; SQLite &middot; about 920 KB</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-label">Contents</div>
+                    <div class="spec-value">1,671 seed messages across 7 active hazard types and 8 sectors. All messages are unvalidated by default, marked as a starting point for your own adaptation workshop.</div>
+                </div>
+                <div class="spec-row">
+                    <div class="spec-label">License</div>
+                    <div class="spec-value">MIT. Free to use, adapt, and redistribute.</div>
+                </div>
+            </div>
+            <div style="margin-top:32px; display:flex; gap:16px; flex-wrap:wrap;">
+                <a href="ARIA-Lex.db" download="ARIA-Lex.db" class="btn-primary">Download ARIA-Lex.db</a>
+                <a href="project-aria.html" class="footer-link" style="display:inline-flex;align-items:center;">Use it with ARIA &rarr;</a>
+            </div>
+        </section>
 
         <!-- Footer Navigation -->
         <nav class="project-footer">
-            <a href="project-previous.html" class="footer-link prev">Previous Project</a>
-            <a href="projects.html" class="footer-link">All Projects</a>
-            <a href="project-next.html" class="footer-link next">Next Project</a>
+            <a href="project-aria.html" class="footer-link">ARIA (the tool)</a>
+            <a href="index.html" class="footer-link">Home</a>
+            <a href="mailto:fysh@lastlarch.com" class="footer-link">Get in touch</a>
         </nav>
         
     </div>

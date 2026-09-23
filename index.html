@@ -167,6 +167,12 @@
       justify-content: space-between;
     }
 
+    .contact-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
     .contact-block a {
       font-family: var(--ff-body);
       font-size: 10px;
@@ -195,6 +201,7 @@
       .panel-right { padding: 48px 40px 60px; border-left: none; border-top: 0.5px solid var(--ivory-d); gap: 48px; }
       .logo-block { justify-content: flex-start; }
       .ghost-frond { width: 100%; }
+      .contact-block { flex-direction: column; align-items: flex-start; gap: 16px; }
     }
   </style>
 </head>
@@ -214,31 +221,34 @@
     <div class="panel-right">
 
       <nav class="nav-block">
-        <a href="about.html" class="nav-item">
+        <a href="project-aria.html" class="nav-item">
           <div class="nav-text">
-            <span class="nav-label">About</span>
-            <span class="nav-sub">Who we are</span>
+            <span class="nav-label">ARIA</span>
+            <span class="nav-sub">Alert &amp; impact tool</span>
           </div>
           <span class="nav-arrow">→</span>
         </a>
-        <a href="projects.html" class="nav-item">
+        <a href="project-aria-lex.html" class="nav-item">
           <div class="nav-text">
-            <span class="nav-label">Projects</span>
-            <span class="nav-sub">Tools &amp; frameworks</span>
+            <span class="nav-label">ARIA-Lex</span>
+            <span class="nav-sub">Early action library</span>
           </div>
           <span class="nav-arrow">→</span>
         </a>
-        <a href="blog.html" class="nav-item">
+        <a href="https://rfs.lastlarch.com" class="nav-item">
           <div class="nav-text">
-            <span class="nav-label">Blog</span>
-            <span class="nav-sub">Thinking &amp; writing</span>
+            <span class="nav-label">Resilient Futures Simulator</span>
+            <span class="nav-sub">Scenario planning</span>
           </div>
           <span class="nav-arrow">→</span>
         </a>
       </nav>
 
       <div class="contact-block">
-        <a href="mailto:fysh@lastlarch.com">fysh@lastlarch.com</a>
+        <div class="contact-left">
+          <a href="about.html">About</a>
+          <a href="mailto:fysh@lastlarch.com">fysh@lastlarch.com</a>
+        </div>
         <span class="contact-mark">est. 2024</span>
       </div>
 
