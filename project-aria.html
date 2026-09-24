@@ -205,49 +205,68 @@ footer { border-top: 1px solid var(--paper3); padding: 32px 48px; display: flex;
     </div>
   </div>
   <div class="hero-graphic">
-    <svg viewBox="0 0 420 315" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect width="420" height="315" fill="#0d1117"/>
-      <defs>
-        <pattern id="g" width="21" height="21" patternUnits="userSpaceOnUse">
-          <path d="M 21 0 L 0 0 0 21" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.5"/>
-        </pattern>
-      </defs>
-      <rect width="420" height="315" fill="url(#g)"/>
-      <!-- Country outlines -->
-      <path d="M60 130 Q90 115 130 125 Q170 110 185 135 Q200 155 185 180 Q165 205 140 210 Q110 218 90 195 Q65 175 60 155 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
-      <path d="M150 70 Q190 55 230 72 Q270 82 285 118 Q300 148 268 168 Q242 188 210 180 Q178 172 158 150 Q132 128 150 100 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
-      <path d="M220 175 Q262 162 300 178 Q336 195 342 232 Q348 268 318 288 Q292 308 256 298 Q214 288 198 260 Q182 234 220 205 Z" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
-      <!-- Polygon -->
-      <path d="M148 143 L232 120 L292 172 L278 245 L204 272 L128 240 Z" fill="rgba(240,165,0,0.05)" stroke="#f0a500" stroke-width="1.2" stroke-dasharray="5 3"/>
-      <!-- Points inside -->
-      <circle cx="175" cy="172" r="4" fill="#f0a500" opacity="0.9"/>
-      <circle cx="175" cy="172" r="8" fill="none" stroke="#f0a500" stroke-width="0.8" opacity="0.3"/>
-      <circle cx="212" cy="150" r="4" fill="#3fb950" opacity="0.9"/>
-      <circle cx="212" cy="150" r="8" fill="none" stroke="#3fb950" stroke-width="0.8" opacity="0.3"/>
-      <circle cx="245" cy="195" r="4" fill="#f0a500" opacity="0.9"/>
-      <circle cx="225" cy="225" r="4" fill="#58a6ff" opacity="0.9"/>
-      <circle cx="185" cy="215" r="4" fill="#f0a500" opacity="0.9"/>
-      <circle cx="255" cy="160" r="3.5" fill="#3fb950" opacity="0.85"/>
-      <circle cx="165" cy="200" r="3.5" fill="#f0a500" opacity="0.85"/>
-      <circle cx="240" cy="245" r="3" fill="#f0a500" opacity="0.75"/>
-      <!-- Points outside (dim) -->
-      <circle cx="90" cy="150" r="2.5" fill="rgba(255,255,255,0.12)"/>
-      <circle cx="320" cy="135" r="2.5" fill="rgba(255,255,255,0.12)"/>
-      <circle cx="110" cy="255" r="2.5" fill="rgba(255,255,255,0.12)"/>
-      <circle cx="350" cy="230" r="2.5" fill="rgba(255,255,255,0.12)"/>
-      <!-- Badges -->
-      <rect x="262" y="130" width="68" height="16" rx="2.5" fill="rgba(63,185,80,0.15)" stroke="rgba(63,185,80,0.4)" stroke-width="0.7"/>
-      <text x="267" y="142" font-family="DM Mono,monospace" font-size="7.5" fill="#3fb950" letter-spacing="0.08em">LIBRARY</text>
-      <rect x="248" y="260" width="90" height="16" rx="2.5" fill="rgba(240,165,0,0.15)" stroke="rgba(240,165,0,0.4)" stroke-width="0.7"/>
-      <text x="253" y="272" font-family="DM Mono,monospace" font-size="7.5" fill="#f0a500" letter-spacing="0.08em">CONTEXTUALISED</text>
-      <rect x="68" y="172" width="82" height="16" rx="2.5" fill="rgba(188,140,255,0.15)" stroke="rgba(188,140,255,0.4)" stroke-width="0.7"/>
-      <text x="73" y="184" font-family="DM Mono,monospace" font-size="7.5" fill="#bc8cff" letter-spacing="0.08em">SYNTHESISED</text>
-      <!-- Fade edges -->
-      <defs>
-        <linearGradient id="ft" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="15%" stop-color="transparent"/><stop offset="85%" stop-color="transparent"/><stop offset="100%" stop-color="#0d1117"/></linearGradient>
-      </defs>
-      <rect width="420" height="315" fill="url(#ft)"/>
-    </svg>
+    <svg viewBox="0 0 480 360" fill="none" xmlns="http://www.w3.org/2000/svg" width="480" height="360">
+  <rect width="480" height="360" fill="#0d1117"/>
+  <defs>
+    <pattern id="g" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+  <rect width="480" height="360" fill="url(#g)"/>
+
+  <!-- Coastline -->
+  <path d="M -10 90 C 60 60, 130 70, 170 100 C 220 135, 200 175, 240 195 C 290 220, 340 200, 390 230 C 430 253, 460 250, 490 260 L 490 380 L -10 380 Z"
+        fill="rgba(255,255,255,0.035)" stroke="rgba(255,255,255,0.14)" stroke-width="1.2"/>
+
+  <!-- Impact polygon -->
+  <path d="M150 128 L246 108 L296 152 L288 220 L214 252 L150 224 L128 172 Z"
+        fill="rgba(240,165,0,0.07)" stroke="#f0a500" stroke-width="1.4" stroke-dasharray="6 4" stroke-linejoin="round"/>
+  <text x="150" y="96" font-family="DM Mono,monospace" font-size="9" fill="#f0a500" letter-spacing="0.06em" opacity="0.85">IMPACT POLYGON</text>
+
+  <!-- Points inside: library / contextualised / synthesised -->
+  <circle cx="185" cy="150" r="4.5" fill="#3fb950"/>
+  <circle cx="185" cy="150" r="9" fill="none" stroke="#3fb950" stroke-width="0.8" opacity="0.35"/>
+  <circle cx="228" cy="140" r="4.5" fill="#3fb950"/>
+  <circle cx="228" cy="140" r="9" fill="none" stroke="#3fb950" stroke-width="0.8" opacity="0.35"/>
+  <circle cx="205" cy="200" r="4.5" fill="#3fb950"/>
+  <circle cx="205" cy="200" r="9" fill="none" stroke="#3fb950" stroke-width="0.8" opacity="0.35"/>
+
+  <circle cx="252" cy="175" r="4.5" fill="#f0a500"/>
+  <circle cx="252" cy="175" r="9" fill="none" stroke="#f0a500" stroke-width="0.8" opacity="0.35"/>
+  <circle cx="168" cy="195" r="4.5" fill="#f0a500"/>
+  <circle cx="168" cy="195" r="9" fill="none" stroke="#f0a500" stroke-width="0.8" opacity="0.35"/>
+
+  <circle cx="240" cy="205" r="4.5" fill="#bc8cff"/>
+  <circle cx="240" cy="205" r="9" fill="none" stroke="#bc8cff" stroke-width="0.8" opacity="0.35"/>
+  <circle cx="195" cy="175" r="4.5" fill="#bc8cff"/>
+  <circle cx="195" cy="175" r="9" fill="none" stroke="#bc8cff" stroke-width="0.8" opacity="0.35"/>
+
+  <!-- Points outside: dim, excluded -->
+  <circle cx="90" cy="140" r="2.5" fill="rgba(255,255,255,0.14)"/>
+  <circle cx="340" cy="130" r="2.5" fill="rgba(255,255,255,0.14)"/>
+  <circle cx="110" cy="260" r="2.5" fill="rgba(255,255,255,0.14)"/>
+  <circle cx="330" cy="260" r="2.5" fill="rgba(255,255,255,0.14)"/>
+  <circle cx="270" cy="90" r="2.5" fill="rgba(255,255,255,0.14)"/>
+
+  <!-- Legend -->
+  <g transform="translate(24, 300)">
+    <rect x="-12" y="-16" width="240" height="52" rx="6" fill="rgba(13,17,23,0.85)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <circle cx="4" cy="0" r="4" fill="#3fb950"/>
+    <text x="14" y="3.5" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(230,237,243,0.75)" letter-spacing="0.04em">Library</text>
+    <circle cx="4" cy="18" r="4" fill="#f0a500"/>
+    <text x="14" y="21.5" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(230,237,243,0.75)" letter-spacing="0.04em">Contextualised</text>
+    <circle cx="122" cy="0" r="4" fill="#bc8cff"/>
+    <text x="132" y="3.5" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(230,237,243,0.75)" letter-spacing="0.04em">Synthesised</text>
+    <circle cx="122" cy="18" r="4" fill="rgba(255,255,255,0.3)"/>
+    <text x="132" y="21.5" font-family="DM Mono,monospace" font-size="8.5" fill="rgba(230,237,243,0.55)" letter-spacing="0.04em">Outside polygon</text>
+  </g>
+
+  <!-- Fade edges -->
+  <defs>
+    <linearGradient id="ft" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0d1117"/><stop offset="10%" stop-color="transparent"/><stop offset="80%" stop-color="transparent"/><stop offset="100%" stop-color="#0d1117"/></linearGradient>
+  </defs>
+  <rect width="480" height="360" fill="url(#ft)"/>
+</svg>
   </div>
 </div>
 
